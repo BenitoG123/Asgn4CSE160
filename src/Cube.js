@@ -11,6 +11,7 @@ class Cube{
       this.matrix = new Matrix4();
       this.buffer = null;
       this.vertices = null;
+      this.fixtop = false;
     }
   
 
@@ -31,7 +32,6 @@ class Cube{
       //#-----
       // Pass the color of a point to u_FragColor variable
       gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-      //gl.uniform4f(u_FragColor, rgba[0]*0.5, rgba[1]*0.5, rgba[2]*0.5, rgba[3]);
       //gl.uniform4f(u_FragColor, 1.0,1.0,1.0, rgba[3]);
 
       //front of cude
@@ -42,7 +42,7 @@ class Cube{
 
       //#-----
       //pass the color of a point to u_FragColor uniform variable
-      //gl.uniform4f(u_FragColor, rgba[0]*.8, rgba[1]*.8, rgba[2]*.8, rgba[3]);
+      gl.uniform4f(u_FragColor, rgba[0]*.8, rgba[1]*.8, rgba[2]*.8, rgba[3]);
       //gl.uniform4f(u_FragColor, rgba[0]*0.5, rgba[1]*0.5, rgba[2]*0.5, rgba[3]);
       //gl.uniform4f(u_FragColor, 1.0,1.0,1.0, rgba[3]);
 
@@ -55,7 +55,7 @@ class Cube{
       //#-----
       //pass the color of a point to u_FragColor uniform variable
       //gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-      //gl.uniform4f(u_FragColor, rgba[0]*0.8, rgba[1]*0.8, rgba[2]*0.8, rgba[3]);
+      gl.uniform4f(u_FragColor, rgba[0]*0.8, rgba[1]*0.8, rgba[2]*0.8, rgba[3]);
 
       //right
       var right1 = new Triangle([1.0,0.0,0.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
@@ -68,7 +68,7 @@ class Cube{
       //#-----
       //pass the color of a point to u_FragColor uniform variable
       //gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-      //gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+      gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
 
       //back
       var back1 = new Triangle([0.0,0.0,-1.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
@@ -80,8 +80,13 @@ class Cube{
 
       //#-----
       //pass the color of a point to u_FragColor uniform variable
+      if (this.fixtop == true) {
+        gl.uniform4f(u_FragColor, rgba[0]*0.3, rgba[1]*0.3, rgba[2]*0.3, rgba[3]);
+      } else {
+        gl.uniform4f(u_FragColor, rgba[0]*0.9, rgba[1]*0.9, rgba[2]*0.9, rgba[3]);
+      }
       //gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-      //gl.uniform4f(u_FragColor, rgba[0]*0.9, rgba[1]*0.9, rgba[2]*0.9, rgba[3]);
+      
 
       //top
       var top1 = new Triangle([0.0,1.0,0.0, 1.0,1.0,-1.0, 0.0,1.0,-1.0 ]);
@@ -93,8 +98,13 @@ class Cube{
 
       //#-----
       //pass the color of a point to u_FragColor uniform variable
+      if (this.fixtop == true) {
+        gl.uniform4f(u_FragColor, rgba[0]*0.9, rgba[1]*0.9, rgba[2]*0.9, rgba[3]);
+      }
+       else {
+        gl.uniform4f(u_FragColor, rgba[0]*0.3, rgba[1]*0.3, rgba[2]*0.3, rgba[3]);
+      }
       //gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-      //gl.uniform4f(u_FragColor, rgba[0]*0.3, rgba[1]*0.3, rgba[2]*0.3, rgba[3]);
       
       //bottom
       var bottom1 = new Triangle([0.0,0.0,0.0, 1.0,0.0,-1.0, 1.0,0.0,0.0 ]);

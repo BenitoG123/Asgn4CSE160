@@ -101,6 +101,7 @@ let g_globalXAngle = 0;
 let g_globalYAngle = 0;
 let g_yellowAngle = 0;
 let g_magentaAngle = 0;
+let g_finalAngle = 0;
 let g_animation = false;
 let g_animation2 = false;
 
@@ -134,6 +135,7 @@ function addActionsForHtmlUI(){
   
   document.getElementById('yellowSlide').addEventListener('mousemove', function() { g_yellowAngle = this.value; renderAllShapes(); });
   document.getElementById('magentaSlide').addEventListener('mousemove', function() { g_magentaAngle = this.value; renderAllShapes(); });
+  document.getElementById('finalSlide').addEventListener('mousemove', function() { g_finalAngle = this.value; renderAllShapes(); });
   
   
   
@@ -141,7 +143,7 @@ function addActionsForHtmlUI(){
   document.getElementById('sizeSlide').addEventListener('mouseup', function() { g_selectedSize = this.value; });
   document.getElementById('alphaSlide').addEventListener('mouseup', function() { g_selectedAlpha = this.value; });
 
-  document.addEventListener('mouseEvent.shiftKey', function() { shiftKey(); });
+  document.addEventListener('mousedown', function(ev) { if (ev.shiftKey) {shiftKey();}  });
 }
 
 function makeImg() {
@@ -211,7 +213,7 @@ function tick() {
 
 function updateAnimationAngles() {
   if (g_animation) {
-    g_yellowAngle = (45*Math.sin(g_seconds));
+    g_yellowAngle = (30*Math.sin(g_seconds));
   }
 
   if (g_animation2) {
@@ -235,7 +237,13 @@ function renderAllShapes() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  //drawTriangle3D( [-1.0,0.0,0.0, -0.5,-1.0,0.0, 0.0,0.0,0.0] );
+  /*
+  var octbody = new Octagon3d([1.0,0.0,1.0,1.0]);
+  octbody.matrix.translate(-0.2,-0.75,0.0)
+  octbody.render();
+  */
+
+  
 
   //draw the cube body
   var body = new Cube([1.0,0.0,0.0,1.0]);
@@ -247,13 +255,8 @@ function renderAllShapes() {
   //draw a left arm
   var leftArm = new Cube([1,1,0,1]);
   leftArm.matrix.setTranslate(0.0,-0.5,0.0);
-  leftArm.matrix.rotate(-5,1,0,0);
-  //animation
-  //if (g_animation) {
-  //  leftArm.matrix.rotate(45*Math.sin(g_seconds), 0,0,1);
-  //} else{
-  //  leftArm.matrix.rotate(-g_yellowAngle,0,0,1);
-  //}
+  leftArm.matrix.rotate(-5,1,0,0); //x-axis
+  leftArm.matrix.rotate(-30,0,0,1); //z-axis
   leftArm.matrix.rotate( -g_yellowAngle,0,0,1);
 
   var yellowCoordinatesMat = new Matrix4(leftArm.matrix);
@@ -266,10 +269,26 @@ function renderAllShapes() {
   //box.color = [1,0,1,1];
   box.matrix = yellowCoordinatesMat;
   box.matrix.translate(0.0,0.65,0);
-  box.matrix.rotate(g_magentaAngle,0,0,1);
+  box.matrix.rotate(-g_magentaAngle,0,0,1);
+
+  var boxCoordinatesMat = new Matrix4(box.matrix);
   box.matrix.scale(0.3, 0.3, 0.3);
-  box.matrix.translate(-0.5,0,-0.001);
+  box.matrix.translate(-0.5,0,-0.101);
   box.render();
+
+  var final = new Cube([1,1,1,1]);
+  final.fixtop = true;
+  //box.color = [1,0,1,1];
+  final.matrix = new Matrix4(boxCoordinatesMat);
+  final.matrix.translate(0.0,0.1,0);
+  final.matrix.rotate(180,0,0,1);
+  final.matrix.rotate(-g_finalAngle,0,0,1);
+  // final.matrix.scale(1, -1,  1);
+  final.matrix.scale(0.2, 0.3, 0.2);
+  final.matrix.translate(-0.501,-1.5,-0.201);
+  final.render();
+
+  
 
 
   //check the time at the end of the function, and show on web page
@@ -301,34 +320,12 @@ function click(ev) {
   console.log("global angle values", g_globalXAngle, g_globalYAngle);
   console.log(typeof(g_globalXAngle))
 
-  //onmoutsemove
-
-  //g_globalXAngle
-
-  //Create and store the new point
-  //let point;
-  //if (g_selectedType==POINT) {
-  //  point = new Point();
-  //} else if (g_selectedType==TRIANGLE) {
-  //  point = new Triangle();
-  //} else {
-  //  point = new Circle(segments);
-  //  //console.log("circle class");
-  //}
-  
-  //point.position = [x,y];
-  //point.color = g_selectedColor.slice();
-  //point.size = g_selectedSize;
-  //point.alpha = g_selectedAlpha/100;
-  //g_shapesList.push(point);
-
-  //g_shapesList.push(point);
-
   //Draw every shape
   renderAllShapes();
 
 }
 
-function shiftclick() {
+function shiftKey() {
+  console.log("shift click works");
   //insert animation
 }
