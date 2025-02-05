@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Blocky Animal</title>
+  </head>
+
+  <body onload="main()">
+    <p>Name: Benito Gravert</p>
+    <p>UCSC email: bgravert@ucsc.edu</p>
+    <canvas id="webgl" width="400" height="400">
+    Please use a browser that supports "canvas"
+    </canvas>
+    <p></p>
+
+    <p id="numdot"> numdot: NA</p>
+
+    <p></p>
+    <button type="button" hidden="hidden" id="green">Green</button>
+    <button type="button" hidden="hidden" id="red">Red</button>
+
+    <button type="button" hidden="hidden" id="clearButton">Clear</button>
+    <p></p>
+
+    <button type="button" hidden="hidden" id="pointButton">Point</button>
+    <button type="button" hidden="hidden" id="triButton">Triangle</button>
+    <button type="button" hidden="hidden" id="circleButton">Circle</button>
+    <p></p>
+
+    <button type="button" hidden="hidden" id="imgButton"></button>
+    <p></p>
+
+
+    <input type="range" hidden="hidden" min="0" max="100" value="100" class="slider" id="redSlide">
+    <p></p>
+
+    <input type="range" hidden="hidden" min="0" max="100" value="0" class="slider" id="greenSlide">
+    <p></p>
+
+    <input type="range" hidden="hidden" min="0" max="100" value="0" class="slider" id="blueSlide">
+    <p></p>
+    Magenta <input type="range" min="-45" max="45" value="0" class="slider" id="magentaSlide">
+    <p></p>
+
+    Yellow <input type="range" min="-45" max="45" value="0" class="slider" id="yellowSlide">
+    <p></p>
+
+    Animation 1<button type="button" id="animationOnButton">ON</button>
+    <button type="button" id="animationOffButton">OFF</button>
+    <p></p>
+
+    Animation 2<button type="button" id="animationOnButton2">ON</button>
+    <button type="button" id="animationOffButton2">OFF</button>
+    <p></p>
+
+    
+
+    Camera X Angle <input type="range" min="0" max="360" value="5" class="slider" id="angleXSlide">
+    <p></p>
+
+    Camera Y Angle <input type="range" min="0" max="360" value="5" class="slider" id="angleYSlide">
+    <p></p>
+
+    <input type="range" hidden="hidden" min="5" max="50" value="0" class="slider" id="sizeSlide">
+    <p></p>
+    <input type="range" hidden="hidden" min="5" max="30" value="0" class="slider" id="segSlide">
+    <p></p>
+    <input type="range" hidden="hidden" min="0" max="100" value="100" class="slider" id="alphaSlide">
+    <p></p>
+
+    <br>
+    <u>notes for grader</u>
+    <p></p>
+    <br>
+    <p></p>
+
+    <script src="./webgl-utils.js"></script>
+    <script src="./webgl-debug.js"></script>
+    <script src="./cuon-utils.js"></script>
+    <script src="./cuon-matrix-cse160.js"></script>
+    <script src="./BlockyAnimal.js"></script>
+    <script src="./Point.js"></script>
+    <script src="./Circle.js"></script>
+    <script src="./Triangle.js"></script>
+    <script src="./Cube.js"></script>
+  </body>
+</html>
