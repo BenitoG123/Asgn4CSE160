@@ -12,6 +12,7 @@ class Cube{
       this.buffer = null;
       this.vertices = null;
       this.fixtop = false;
+      this.shadeside = false;
     }
   
 

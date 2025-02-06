@@ -99,9 +99,10 @@ let g_selectedType=POINT;
 let g_selectedAlpha = 1.0;
 let g_globalXAngle = 0;
 let g_globalYAngle = 0;
-let g_yellowAngle = 0;
-let g_magentaAngle = 0;
-let g_finalAngle = 0;
+let g_yellowAngle = 40;
+let g_magentaAngle = -45;
+let g_finalAngle = -45;
+let g_msize = 1;
 let g_animation = false;
 let g_animation2 = false;
 
@@ -214,10 +215,12 @@ function tick() {
 function updateAnimationAngles() {
   if (g_animation) {
     g_yellowAngle = (30*Math.sin(g_seconds));
+    g_magentaAngle = (45*Math.sin(2.5*g_seconds));
+    g_finalAngle = (45*Math.sin(2.0*g_seconds));
   }
 
   if (g_animation2) {
-    g_magentaAngle = (45*Math.sin(3*g_seconds));
+    g_msize = 1*Math.abs(Math.sin(2.0*g_seconds))
   }
 }
 
@@ -242,53 +245,473 @@ function renderAllShapes() {
   octbody.matrix.translate(-0.2,-0.75,-0.25);
   octbody.render();
   
+  
+  var neck = new Cube([0.9,0.0,0.9,1.0]);
+  neck.matrix.translate(-0.05,-0.4,0.30);
+  neck.matrix.scale(0.1,0.3,0.1);
+  neck.render();
 
-  /*
+  var head = new Cube([0.9,0.0,0.9,1.0]);
+  head.matrix.translate(-0.25,-0.20,0.5);
+  head.matrix.scale(0.5,0.5,0.5);
+  head.render();
+
+  var leftEye = new Cube([1.0,1.0,1.0,1.0]);
+  leftEye.matrix.translate(-0.15,0.07,0.05);
+  leftEye.matrix.scale(0.1,0.1,0.1);
+  leftEye.render();
+
+  var leftPuple = new Cube([0.0,0.0,0.0,1.0]);
+  leftPuple.matrix.translate(-0.1,0.11,0.04);
+  leftPuple.matrix.scale(0.02,0.02,0.1);
+  leftPuple.render();
+
+  var rightEye = new Cube([1.0,1.0,1.0,1.0]);
+  rightEye.matrix.translate(0.05,0.07,0.05);
+  rightEye.matrix.scale(0.1,0.1,0.1);
+  rightEye.render();
+
+  var rightPuple = new Cube([0.0,0.0,0.0,1.0]);
+  rightPuple.matrix.translate(0.1,0.11,0.04);
+  rightPuple.matrix.scale(0.02,0.02,0.1);
+  rightPuple.render();
+
+  var mouth = new Cube([0.1,0.1,0.1,1.0]);
+  mouth.matrix.translate(-0.05,-0.1,0.10);
+  mouth.matrix.scale(0.1*g_msize,0.1*g_msize,0.11);
+  mouth.render();
+
+
+
+  
+  var zarmscale = 0.2; //exact number
+  var xarmscale = 0.6; //multiplier
+  var yarmscale = 0.6; //multiplier
+  var legy = -0.65;
+
+  //f
+  var leg1x = 0.1;
+  var leg1z = 0;
+  var leg1yrot = 90;
+
+  //fr
+  var leg2x = 0.3;
+  var leg2z = 0.1;
+  var leg2yrot = 45;
+
+  //r
+  var leg3x = 0.35;
+  var leg3z = 0.35;
+  var leg3yrot = 0;
+
+  //br
+  var leg4x = 0.2;
+  var leg4z = 0.55;
+  var leg4yrot = 315;
+
+  //b
+  var leg5x = -0.1;
+  var leg5z = 0.55;
+  var leg5yrot = 270;
+
+  //bl
+  var leg6x = -0.3;
+  var leg6z = 0.45;
+  var leg6yrot = 225;
+
+  //l
+  var leg7x = -0.3;
+  var leg7z = 0.15;
+  var leg7yrot = 180;
+
+  //fl
+  var leg8x = -0.1;
+  var leg8z = 0;
+  var leg8yrot = 135;
 
   //draw the cube body
-  var body = new Cube([1.0,0.0,0.0,1.0]);
-  body.matrix.translate(-0.25,-0.75,0.0);
-  body.matrix.rotate(-5,1,0,0);
-  body.matrix.scale(0.5, 0.3, 0.5);
-  body.render();
+  var base = new Cube([1.0,0.0,1.0,1.0]);
+  base.matrix.translate(leg1x,legy,leg1z);
+  base.matrix.rotate(leg1yrot,0,1,0);
+  var baseCoordingatesMat = new Matrix4(base.matrix);
+
+  base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.render();
 
   //draw a left arm
-  var leftArm = new Cube([1,1,0,1]);
-  leftArm.matrix.setTranslate(0.0,-0.5,0.0);
-  leftArm.matrix.rotate(-5,1,0,0); //x-axis
-  leftArm.matrix.rotate(-30,0,0,1); //z-axis
-  leftArm.matrix.rotate( -g_yellowAngle,0,0,1);
+  var longArm = new Cube([0.9,0,0.9,1]);
+  longArm.matrix = baseCoordingatesMat;
+  longArm.matrix.translate(0.4*xarmscale,0.18*yarmscale,-0.01);
+  //longArm.matrix.rotate(-0,1,0,0); //x-axis
+  longArm.matrix.rotate(-40,0,0,1); //z-axis
+  longArm.matrix.rotate( -g_yellowAngle,0,0,1);
 
-  var yellowCoordinatesMat = new Matrix4(leftArm.matrix);
-  leftArm.matrix.scale(0.25, 0.7, 0.5);
-  leftArm.matrix.translate(-0.5,0,0)
-  leftArm.render();
+  var longCoordinatesMat = new Matrix4(longArm.matrix);
+  longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
+  longArm.matrix.translate(-0.5,0,0)
+  longArm.render();
 
   //draw a box
-  var box = new Cube([1,0,1,1]);
+  var short = new Cube([0.8,0,0.8,1]);
   //box.color = [1,0,1,1];
-  box.matrix = yellowCoordinatesMat;
-  box.matrix.translate(0.0,0.65,0);
-  box.matrix.rotate(-g_magentaAngle,0,0,1);
+  short.matrix = longCoordinatesMat;
+  short.matrix.translate(0.0,0.5*yarmscale,0.02);
+  short.matrix.rotate(-g_magentaAngle,0,0,1);
 
-  var boxCoordinatesMat = new Matrix4(box.matrix);
-  box.matrix.scale(0.3, 0.3, 0.3);
-  box.matrix.translate(-0.5,0,-0.101);
-  box.render();
+  var shortCoordinatesMat = new Matrix4(short.matrix);
+  short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
+  short.matrix.translate(-0.5,0,-0.101);
+  short.render();
 
-  var final = new Cube([1,1,1,1]);
-  final.fixtop = true;
+  var tip = new Cube([0.7,0,0.7,1.0]);
+  tip.fixtop = true;
   //box.color = [1,0,1,1];
-  final.matrix = new Matrix4(boxCoordinatesMat);
-  final.matrix.translate(0.0,0.1,0);
-  final.matrix.rotate(180,0,0,1);
-  final.matrix.rotate(-g_finalAngle,0,0,1);
+  tip.matrix = new Matrix4(shortCoordinatesMat);
+  tip.matrix.translate(0.0,0.2,0.01);
+  tip.matrix.rotate(180,0,0,1);
+  tip.matrix.rotate(-g_finalAngle,0,0,1);
   // final.matrix.scale(1, -1,  1);
-  final.matrix.scale(0.2, 0.3, 0.2);
-  final.matrix.translate(-0.501,-1.5,-0.201);
-  final.render();
+  tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
+  tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.render();
 
-  */
+
+  //leg 2
+
+  //draw the cube body
+  var base = new Cube([1.0,0.0,1.0,1.0]);
+  base.matrix.translate(leg2x,legy,leg2z);
+  base.matrix.rotate(leg2yrot,0,1,0);
+  var baseCoordingatesMat = new Matrix4(base.matrix);
+
+  base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.render();
+
+  //draw a left arm
+  var longArm = new Cube([0.9,0,0.9,1]);
+  longArm.matrix = baseCoordingatesMat;
+  longArm.matrix.translate(0.4*xarmscale,0.18*yarmscale,-0.01);
+  //longArm.matrix.rotate(-0,1,0,0); //x-axis
+  longArm.matrix.rotate(-40,0,0,1); //z-axis
+  longArm.matrix.rotate( -g_yellowAngle,0,0,1);
+
+  var longCoordinatesMat = new Matrix4(longArm.matrix);
+  longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
+  longArm.matrix.translate(-0.5,0,0)
+  longArm.render();
+
+  //draw a box
+  var short = new Cube([0.8,0,0.8,1]);
+  //box.color = [1,0,1,1];
+  short.matrix = longCoordinatesMat;
+  short.matrix.translate(0.0,0.5*yarmscale,0.02);
+  short.matrix.rotate(-g_magentaAngle,0,0,1);
+
+  var shortCoordinatesMat = new Matrix4(short.matrix);
+  short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
+  short.matrix.translate(-0.5,0,-0.101);
+  short.render();
+
+  var tip = new Cube([0.7,0,0.7,1.0]);
+  tip.fixtop = true;
+  //box.color = [1,0,1,1];
+  tip.matrix = new Matrix4(shortCoordinatesMat);
+  tip.matrix.translate(0.0,0.2,0.01);
+  tip.matrix.rotate(180,0,0,1);
+  tip.matrix.rotate(-g_finalAngle,0,0,1);
+  // final.matrix.scale(1, -1,  1);
+  tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
+  tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.render();
+
+  //leg 3
+
+  //draw the cube body
+  var base = new Cube([1.0,0.0,1.0,1.0]);
+  base.matrix.translate(leg3x,legy,leg3z);
+  base.matrix.rotate(leg3yrot,0,1,0);
+  var baseCoordingatesMat = new Matrix4(base.matrix);
+
+  base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.render();
+
+  //draw a left arm
+  var longArm = new Cube([0.9,0,0.9,1]);
+  longArm.matrix = baseCoordingatesMat;
+  longArm.matrix.translate(0.4*xarmscale,0.18*yarmscale,-0.01);
+  //longArm.matrix.rotate(-0,1,0,0); //x-axis
+  longArm.matrix.rotate(-40,0,0,1); //z-axis
+  longArm.matrix.rotate( -g_yellowAngle,0,0,1);
+
+  var longCoordinatesMat = new Matrix4(longArm.matrix);
+  longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
+  longArm.matrix.translate(-0.5,0,0)
+  longArm.render();
+
+  //draw a box
+  var short = new Cube([0.8,0,0.8,1]);
+  //box.color = [1,0,1,1];
+  short.matrix = longCoordinatesMat;
+  short.matrix.translate(0.0,0.5*yarmscale,0.02);
+  short.matrix.rotate(-g_magentaAngle,0,0,1);
+
+  var shortCoordinatesMat = new Matrix4(short.matrix);
+  short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
+  short.matrix.translate(-0.5,0,-0.101);
+  short.render();
+
+  var tip = new Cube([0.7,0,0.7,1.0]);
+  tip.fixtop = true;
+  //box.color = [1,0,1,1];
+  tip.matrix = new Matrix4(shortCoordinatesMat);
+  tip.matrix.translate(0.0,0.2,0.01);
+  tip.matrix.rotate(180,0,0,1);
+  tip.matrix.rotate(-g_finalAngle,0,0,1);
+  // final.matrix.scale(1, -1,  1);
+  tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
+  tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.render();
+
+  //leg 4
+
+  //draw the cube body
+  var base = new Cube([1.0,0.0,1.0,1.0]);
+  base.matrix.translate(leg4x,legy,leg4z);
+  base.matrix.rotate(leg4yrot,0,1,0);
+  var baseCoordingatesMat = new Matrix4(base.matrix);
+
+  base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.render();
+
+  //draw a left arm
+  var longArm = new Cube([0.9,0,0.9,1]);
+  longArm.matrix = baseCoordingatesMat;
+  longArm.matrix.translate(0.4*xarmscale,0.18*yarmscale,-0.01);
+  //longArm.matrix.rotate(-0,1,0,0); //x-axis
+  longArm.matrix.rotate(-40,0,0,1); //z-axis
+  longArm.matrix.rotate( -g_yellowAngle,0,0,1);
+
+  var longCoordinatesMat = new Matrix4(longArm.matrix);
+  longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
+  longArm.matrix.translate(-0.5,0,0)
+  longArm.render();
+
+  //draw a box
+  var short = new Cube([0.8,0,0.8,1]);
+  //box.color = [1,0,1,1];
+  short.matrix = longCoordinatesMat;
+  short.matrix.translate(0.0,0.5*yarmscale,0.02);
+  short.matrix.rotate(-g_magentaAngle,0,0,1);
+
+  var shortCoordinatesMat = new Matrix4(short.matrix);
+  short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
+  short.matrix.translate(-0.5,0,-0.101);
+  short.render();
+
+  var tip = new Cube([0.7,0,0.7,1.0]);
+  tip.fixtop = true;
+  //box.color = [1,0,1,1];
+  tip.matrix = new Matrix4(shortCoordinatesMat);
+  tip.matrix.translate(0.0,0.2,0.01);
+  tip.matrix.rotate(180,0,0,1);
+  tip.matrix.rotate(-g_finalAngle,0,0,1);
+  // final.matrix.scale(1, -1,  1);
+  tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
+  tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.render();
+
+  //leg5
+
+  //draw the cube body
+  var base = new Cube([1.0,0.0,1.0,1.0]);
+  base.matrix.translate(leg5x,legy,leg5z);
+  base.matrix.rotate(leg5yrot,0,1,0);
+  var baseCoordingatesMat = new Matrix4(base.matrix);
+
+  base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.render();
+
+  //draw a left arm
+  var longArm = new Cube([0.9,0,0.9,1]);
+  longArm.matrix = baseCoordingatesMat;
+  longArm.matrix.translate(0.4*xarmscale,0.18*yarmscale,-0.01);
+  //longArm.matrix.rotate(-0,1,0,0); //x-axis
+  longArm.matrix.rotate(-40,0,0,1); //z-axis
+  longArm.matrix.rotate( -g_yellowAngle,0,0,1);
+
+  var longCoordinatesMat = new Matrix4(longArm.matrix);
+  longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
+  longArm.matrix.translate(-0.5,0,0)
+  longArm.render();
+
+  //draw a box
+  var short = new Cube([0.8,0,0.8,1]);
+  //box.color = [1,0,1,1];
+  short.matrix = longCoordinatesMat;
+  short.matrix.translate(0.0,0.5*yarmscale,0.02);
+  short.matrix.rotate(-g_magentaAngle,0,0,1);
+
+  var shortCoordinatesMat = new Matrix4(short.matrix);
+  short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
+  short.matrix.translate(-0.5,0,-0.101);
+  short.render();
+
+  var tip = new Cube([0.7,0,0.7,1.0]);
+  tip.fixtop = true;
+  //box.color = [1,0,1,1];
+  tip.matrix = new Matrix4(shortCoordinatesMat);
+  tip.matrix.translate(0.0,0.2,0.01);
+  tip.matrix.rotate(180,0,0,1);
+  tip.matrix.rotate(-g_finalAngle,0,0,1);
+  // final.matrix.scale(1, -1,  1);
+  tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
+  tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.render();
+
+  //leg6
+
+  //draw the cube body
+  var base = new Cube([1.0,0.0,1.0,1.0]);
+  base.matrix.translate(leg6x,legy,leg6z);
+  base.matrix.rotate(leg6yrot,0,1,0);
+  var baseCoordingatesMat = new Matrix4(base.matrix);
+
+  base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.render();
+
+  //draw a left arm
+  var longArm = new Cube([0.9,0,0.9,1]);
+  longArm.matrix = baseCoordingatesMat;
+  longArm.matrix.translate(0.4*xarmscale,0.18*yarmscale,-0.01);
+  //longArm.matrix.rotate(-0,1,0,0); //x-axis
+  longArm.matrix.rotate(-40,0,0,1); //z-axis
+  longArm.matrix.rotate( -g_yellowAngle,0,0,1);
+
+  var longCoordinatesMat = new Matrix4(longArm.matrix);
+  longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
+  longArm.matrix.translate(-0.5,0,0)
+  longArm.render();
+
+  //draw a box
+  var short = new Cube([0.8,0,0.8,1]);
+  //box.color = [1,0,1,1];
+  short.matrix = longCoordinatesMat;
+  short.matrix.translate(0.0,0.5*yarmscale,0.02);
+  short.matrix.rotate(-g_magentaAngle,0,0,1);
+
+  var shortCoordinatesMat = new Matrix4(short.matrix);
+  short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
+  short.matrix.translate(-0.5,0,-0.101);
+  short.render();
+
+  var tip = new Cube([0.7,0,0.7,1.0]);
+  tip.fixtop = true;
+  //box.color = [1,0,1,1];
+  tip.matrix = new Matrix4(shortCoordinatesMat);
+  tip.matrix.translate(0.0,0.2,0.01);
+  tip.matrix.rotate(180,0,0,1);
+  tip.matrix.rotate(-g_finalAngle,0,0,1);
+  // final.matrix.scale(1, -1,  1);
+  tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
+  tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.render();
+
+  //leg7
+
+  //draw the cube body
+  var base = new Cube([1.0,0.0,1.0,1.0]);
+  base.matrix.translate(leg7x,legy,leg7z);
+  base.matrix.rotate(leg7yrot,0,1,0);
+  var baseCoordingatesMat = new Matrix4(base.matrix);
+
+  base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.render();
+
+  //draw a left arm
+  var longArm = new Cube([0.9,0,0.9,1]);
+  longArm.matrix = baseCoordingatesMat;
+  longArm.matrix.translate(0.4*xarmscale,0.18*yarmscale,-0.01);
+  //longArm.matrix.rotate(-0,1,0,0); //x-axis
+  longArm.matrix.rotate(-40,0,0,1); //z-axis
+  longArm.matrix.rotate( -g_yellowAngle,0,0,1);
+
+  var longCoordinatesMat = new Matrix4(longArm.matrix);
+  longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
+  longArm.matrix.translate(-0.5,0,0)
+  longArm.render();
+
+  //draw a box
+  var short = new Cube([0.8,0,0.8,1]);
+  //box.color = [1,0,1,1];
+  short.matrix = longCoordinatesMat;
+  short.matrix.translate(0.0,0.5*yarmscale,0.02);
+  short.matrix.rotate(-g_magentaAngle,0,0,1);
+
+  var shortCoordinatesMat = new Matrix4(short.matrix);
+  short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
+  short.matrix.translate(-0.5,0,-0.101);
+  short.render();
+
+  var tip = new Cube([0.7,0,0.7,1.0]);
+  tip.fixtop = true;
+  //box.color = [1,0,1,1];
+  tip.matrix = new Matrix4(shortCoordinatesMat);
+  tip.matrix.translate(0.0,0.2,0.01);
+  tip.matrix.rotate(180,0,0,1);
+  tip.matrix.rotate(-g_finalAngle,0,0,1);
+  // final.matrix.scale(1, -1,  1);
+  tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
+  tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.render();
+
+  //leg8
+
+  //draw the cube body
+  var base = new Cube([1.0,0.0,1.0,1.0]);
+  base.matrix.translate(leg8x,legy,leg8z);
+  base.matrix.rotate(leg8yrot,0,1,0);
+  var baseCoordingatesMat = new Matrix4(base.matrix);
+
+  base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.render();
+
+  //draw a left arm
+  var longArm = new Cube([0.9,0,0.9,1]);
+  longArm.matrix = baseCoordingatesMat;
+  longArm.matrix.translate(0.4*xarmscale,0.18*yarmscale,-0.01);
+  //longArm.matrix.rotate(-0,1,0,0); //x-axis
+  longArm.matrix.rotate(-40,0,0,1); //z-axis
+  longArm.matrix.rotate( -g_yellowAngle,0,0,1);
+
+  var longCoordinatesMat = new Matrix4(longArm.matrix);
+  longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
+  longArm.matrix.translate(-0.5,0,0)
+  longArm.render();
+
+  //draw a box
+  var short = new Cube([0.8,0,0.8,1]);
+  //box.color = [1,0,1,1];
+  short.matrix = longCoordinatesMat;
+  short.matrix.translate(0.0,0.5*yarmscale,0.02);
+  short.matrix.rotate(-g_magentaAngle,0,0,1);
+
+  var shortCoordinatesMat = new Matrix4(short.matrix);
+  short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
+  short.matrix.translate(-0.5,0,-0.101);
+  short.render();
+
+  var tip = new Cube([0.7,0,0.7,1.0]);
+  tip.fixtop = true;
+  //box.color = [1,0,1,1];
+  tip.matrix = new Matrix4(shortCoordinatesMat);
+  tip.matrix.translate(0.0,0.2,0.01);
+  tip.matrix.rotate(180,0,0,1);
+  tip.matrix.rotate(-g_finalAngle,0,0,1);
+  // final.matrix.scale(1, -1,  1);
+  tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
+  tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.render();
+  
 
   
 
@@ -329,5 +752,10 @@ function click(ev) {
 
 function shiftKey() {
   console.log("shift click works");
+  if (g_animation2 == true) {
+    g_animation2 = false;
+  } else {
+    g_animation2 = true;
+  }
   //insert animation
 }

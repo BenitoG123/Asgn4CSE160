@@ -186,5 +186,73 @@ class Octagon3d{
       //front left
       var fl = new Triangle([-0.28,height,0.28, 0.2,height,0.48, 0.0,height,0.0 ]);
       fl.drawTriangle3D();
+
+
+      //sides
+
+      gl.uniform4f(u_FragColor, rgba[0]*0.8, rgba[1]*0.8, rgba[2]*0.8, rgba[3]);
+      //gl.uniform4f(u_FragColor, 0.4,0.4,0.4, rgba[3]);
+
+      //front of cude
+      var sfront1 = new Triangle([0.0,0.0,0.0, 0.4,height,0.0, 0.4,0.0,0.0 ]);
+      sfront1.drawTriangle3D();
+      var sfront2 = new Triangle([0.0,0.0,0.0, 0.4,height,0.0, 0.0,height,0.0 ]);
+      sfront2.drawTriangle3D();
+
+      gl.uniform4f(u_FragColor, rgba[0]*.7, rgba[1]*.7, rgba[2]*.7, rgba[3]);
+      
+      //front right
+      var sfr1 = new Triangle([0.4,0.0,0.0, 0.68,height,0.28, 0.68,0.0,0.28 ]);
+      sfr1.drawTriangle3D();
+      var sfr2 = new Triangle([0.4,0.0,0.0, 0.68,height,0.28, 0.4,height,0.0 ]);
+      sfr2.drawTriangle3D();
+
+      gl.uniform4f(u_FragColor, rgba[0]*.6, rgba[1]*.6, rgba[2]*.6, rgba[3]);
+
+      //right
+      var sright = new Triangle([0.68,0.0,0.28, 0.68,height,0.68, 0.68,0.0,0.68 ]);
+      sright.drawTriangle3D();
+      var sright2 = new Triangle([0.68,0.0,0.28, 0.68,height,0.68, 0.68,height,0.28 ]);
+      sright2.drawTriangle3D();
+
+      gl.uniform4f(u_FragColor, rgba[0]*.5, rgba[1]*.5, rgba[2]*.5, rgba[3]);
+
+      //back right
+      var sbr1 = new Triangle([0.68,0.0,0.68, 0.4,height,0.96, 0.4,0.0,0.96 ]);
+      sbr1.drawTriangle3D();
+      var sbr2 = new Triangle([0.68,0.0,0.68, 0.4,height,0.96, 0.68,height,0.68 ]);
+      sbr2.drawTriangle3D();
+
+      gl.uniform4f(u_FragColor, rgba[0]*.4, rgba[1]*.4, rgba[2]*.4, rgba[3]);
+
+      //back
+      var sback1 = new Triangle([0.4,0.0,0.96, 0.0,height,0.96, 0.0,0.0,0.96 ]);
+      sback1.drawTriangle3D();
+      var sback2 = new Triangle([0.4,0.0,0.96, 0.0,height,0.96, 0.4,height,0.96 ]);
+      sback2.drawTriangle3D();
+
+      gl.uniform4f(u_FragColor, rgba[0]*.5, rgba[1]*.5, rgba[2]*.5, rgba[3]);
+
+      //back left
+      var sbl1 = new Triangle([0.0,0.0,0.96, -0.28,height,0.68, -0.28,0.0,0.68 ]);
+      sbl1.drawTriangle3D();
+      var sbl2 = new Triangle([0.0,0.0,0.96, -0.28,height,0.68, 0.0,height,0.96 ]);
+      sbl2.drawTriangle3D();
+
+      gl.uniform4f(u_FragColor, rgba[0]*.6, rgba[1]*.6, rgba[2]*.6, rgba[3]);
+
+      //left
+      var sleft1 = new Triangle([-0.28,0.0,0.68, -0.28,height,0.28, -0.28,0.0,0.28 ]);
+      sleft1.drawTriangle3D();
+      var sleft2 = new Triangle([-0.28,0.0,0.68, -0.28,height,0.28, -0.28,height,0.68 ]);
+      sleft2.drawTriangle3D();
+
+      gl.uniform4f(u_FragColor, rgba[0]*.7, rgba[1]*.7, rgba[2]*.7, rgba[3]);
+
+      //front left
+      var sfl1 = new Triangle([-0.28,0.0,0.28, -0.0,height,0.0, -0.0,0.0,0.0 ]);
+      sfl1.drawTriangle3D();
+      var sfl2 = new Triangle([-0.28,0.0,0.28, -0.0,height,0.0, -0.28,height,0.28 ]);
+      sfl2.drawTriangle3D();
     }
 }
