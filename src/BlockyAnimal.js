@@ -237,13 +237,13 @@ function renderAllShapes() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  /*
-  var octbody = new Octagon3d([1.0,0.0,1.0,1.0]);
-  octbody.matrix.translate(-0.2,-0.75,0.0)
-  octbody.render();
-  */
-
   
+  var octbody = new Octagon3d([1.0,0.0,1.0,1.0]);
+  octbody.matrix.translate(-0.2,-0.75,-0.25);
+  octbody.render();
+  
+
+  /*
 
   //draw the cube body
   var body = new Cube([1.0,0.0,0.0,1.0]);
@@ -287,6 +287,8 @@ function renderAllShapes() {
   final.matrix.scale(0.2, 0.3, 0.2);
   final.matrix.translate(-0.501,-1.5,-0.201);
   final.render();
+
+  */
 
   
 
