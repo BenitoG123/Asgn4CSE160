@@ -25,6 +25,7 @@ class Cube{
       var rgba = this.color;
       //var size = this.size;
       //var alpha = this.alpha;
+      //rgba[3] = alpha;
   
       gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
   
@@ -37,9 +38,11 @@ class Cube{
 
       //front of cude
       var front1 = new Triangle([0.0,0.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0 ]);
-      front1.drawTriangle3D();
+      front1.uv = [0,0, 1,1, 1,0];
+      front1.drawTriangle3DUV();
       var front2 = new Triangle([0.0,0.0,0.0, 1.0,1.0,0.0, 0.0,1.0,0.0 ]);
-      front2.drawTriangle3D();
+      front2.uv = [0,0, 1,1, 0,1];
+      front2.drawTriangle3DUV();
 
       //#-----
       //pass the color of a point to u_FragColor uniform variable
@@ -49,8 +52,11 @@ class Cube{
 
       //left
       var left1 = new Triangle([0.0,0.0,0.0, 0.0,1.0,-1.0, 0.0,0.0,-1.0 ]);
+      left1.uv = [0,0, 1,1, 1,0];
       left1.drawTriangle3D();
+
       var left2 = new Triangle([0.0,0.0,0.0, 0.0,1.0,-1.0, 0.0,1.0,0.0 ]);
+      left2.uv = [0,0, 1,1, 0,1];
       left2.drawTriangle3D();
       
       //#-----

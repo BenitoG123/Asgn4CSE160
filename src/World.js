@@ -1,29 +1,41 @@
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE = `
+  precision mediump float;
   attribute vec4 a_Position;
+  attribute vec2 a_UV;
+  varying vec2 v_UV;
   uniform mat4 u_ModelMatrix;
   uniform mat4 u_GlobalRotateMatrix;
+  uniform mat4 u_ViewMatrix;
+  uniform mat4 u_ProjectionMatrix;
   void main() {
+    //gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     gl_Position = u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
+    v_UV = a_UV;
   }`
 
 // Fragment shader program
 var FSHADER_SOURCE = `
   precision mediump float;
+  varying vec2 v_UV;
   uniform vec4 u_FragColor;
   void main() {
     gl_FragColor = u_FragColor;
+    gl_FragColor = vec4(v_UV,1.0,1.0);
   }`
 
   //Global Variables
   let canvas;
   let gl;
   let a_Position;
+  let a_UV;
   let u_FragColor;
   let u_Size;
-  let u_Alpha;
+  //let u_Alpha;
   let u_ModelMatrix;
+  let u_ProjectionMatrix;
+  let u_ViewMatrix;
   let u_GlobalRotateMatrix;
 
 function setupWebGL() {
@@ -55,6 +67,12 @@ function connectVariablesToGLSL(){
       console.log('Failed to get the storage location of a_Position');
       return;
     }
+
+    a_UV = gl.getAttribLocation(gl.program, 'a_UV');
+    if (a_UV < 0) {
+      console.log('Failed to get the storage location of a_UV');
+      return;
+    }
   
     // Get the storage location of u_FragColor
     u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
@@ -82,6 +100,18 @@ function connectVariablesToGLSL(){
       return;
     }
 
+    u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
+    if (!u_ViewMatrix) {
+      console.log('Failed to get the storage location of u_ViewMatrix');
+      return;
+    }
+
+    u_ProjectionMatrix = gl.getUniformLocation(gl.program, 'u_ProjectionMatrix');
+    if (!u_ProjectionMatrix) {
+      console.log('Failed to get the storage location of u_ProjectionMatrix');
+      return;
+    }
+
     //set an initial value for this matrix to identity
     var identityM = new Matrix4();
     gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
@@ -96,7 +126,7 @@ const CIRCLE = 2;
 let g_selectedColor=[1.0, 1.0, 1.0, 1.0];
 let g_selectedSize = 5;
 let g_selectedType=POINT;
-let g_selectedAlpha = 1.0;
+//let g_selectedAlpha = 1.0;
 let g_globalXAngle = 0;
 let g_globalYAngle = 0;
 let g_yellowAngle = 40;
@@ -110,14 +140,14 @@ let g_animation2 = false;
 function addActionsForHtmlUI(){
 
   //button events (shape type)
-  document.getElementById('green').onclick = function() { g_selectedColor = [0.0, 1.0, 0.0, 1.0]; };
-  document.getElementById('red').onclick = function() { g_selectedColor = [1.0, 0.0, 0.0, 1.0]; };
-  document.getElementById('clearButton').onclick = function() { g_shapesList = []; renderAllShapes(); };
+  //document.getElementById('green').onclick = function() { g_selectedColor = [0.0, 1.0, 0.0, 1.0]; };
+  //document.getElementById('red').onclick = function() { g_selectedColor = [1.0, 0.0, 0.0, 1.0]; };
+  //document.getElementById('clearButton').onclick = function() { g_shapesList = []; renderAllShapes(); };
 
-  document.getElementById('pointButton').onclick = function() {g_selectedType=POINT};
-  document.getElementById('triButton').onclick = function() {g_selectedType=TRIANGLE};
-  document.getElementById('circleButton').onclick = function() {g_selectedType=CIRCLE};
-  document.getElementById('imgButton').onclick = makeImg;
+  //document.getElementById('pointButton').onclick = function() {g_selectedType=POINT};
+  //document.getElementById('triButton').onclick = function() {g_selectedType=TRIANGLE};
+  //document.getElementById('circleButton').onclick = function() {g_selectedType=CIRCLE};
+  //document.getElementById('imgButton').onclick = makeImg;
 
   document.getElementById('animationOnButton').onclick = function() {g_animation=true};
   document.getElementById('animationOffButton').onclick = function() {g_animation=false};
@@ -129,7 +159,7 @@ function addActionsForHtmlUI(){
   document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100; });
   document.getElementById('greenSlide').addEventListener('mouseup', function() { g_selectedColor[1] = this.value/100; });
   document.getElementById('blueSlide').addEventListener('mouseup', function() { g_selectedColor[2] = this.value/100; });
-  document.getElementById('segSlide').addEventListener('mouseup', function() { segments = this.value; });
+  //document.getElementById('segSlide').addEventListener('mouseup', function() { segments = this.value; });
 
   document.getElementById('angleXSlide').addEventListener('mousemove', function() { g_globalXAngle = parseInt(this.value); renderAllShapes(); });
   document.getElementById('angleYSlide').addEventListener('mousemove', function() { g_globalYAngle = parseInt(this.value); renderAllShapes(); });
@@ -142,7 +172,7 @@ function addActionsForHtmlUI(){
   
   //Size Slider Events
   document.getElementById('sizeSlide').addEventListener('mouseup', function() { g_selectedSize = this.value; });
-  document.getElementById('alphaSlide').addEventListener('mouseup', function() { g_selectedAlpha = this.value; });
+  //document.getElementById('alphaSlide').addEventListener('mouseup', function() { g_selectedAlpha = this.value; });
 
   document.addEventListener('mousedown', function(ev) { if (ev.shiftKey) {shiftKey();}  });
 }

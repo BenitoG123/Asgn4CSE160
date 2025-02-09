@@ -13,7 +13,9 @@ class Point{
       var xy = this.position;
       var rgba = this.color;
       var size = this.size;
-      var alpha = this.alpha;
+      //var alpha = this.alpha;
+
+      //rgba[3] = alpha;
 
       //Quit using the buffer to send the attribute
       gl.disableVertexAttribArray(a_Position);
@@ -23,7 +25,7 @@ class Point{
       gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
   
       // Pass the color of a point to u_FragColor variable
-      gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], alpha);
+      gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
   
       //Pass the size of a point to u_Size variable
       gl.uniform1f(u_Size, size);
