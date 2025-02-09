@@ -9,6 +9,7 @@ class Cube{
       //this.segments = segments;
       //this.alpha = 1.0;
       this.matrix = new Matrix4();
+      this.textureNum = -1;
       this.buffer = null;
       this.vertices = null;
       this.fixtop = false;
@@ -26,11 +27,11 @@ class Cube{
       //var size = this.size;
       //var alpha = this.alpha;
       //rgba[3] = alpha;
+
+      gl.uniform1i(u_whichTexture, this.textureNum);
   
       gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
   
-
-
       //#-----
       // Pass the color of a point to u_FragColor variable
       gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
@@ -53,11 +54,11 @@ class Cube{
       //left
       var left1 = new Triangle([0.0,0.0,0.0, 0.0,1.0,-1.0, 0.0,0.0,-1.0 ]);
       left1.uv = [0,0, 1,1, 1,0];
-      left1.drawTriangle3D();
+      left1.drawTriangle3DUV();
 
       var left2 = new Triangle([0.0,0.0,0.0, 0.0,1.0,-1.0, 0.0,1.0,0.0 ]);
       left2.uv = [0,0, 1,1, 0,1];
-      left2.drawTriangle3D();
+      left2.drawTriangle3DUV();
       
       //#-----
       //pass the color of a point to u_FragColor uniform variable
@@ -66,9 +67,11 @@ class Cube{
 
       //right
       var right1 = new Triangle([1.0,0.0,0.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
-      right1.drawTriangle3D();
+      right1.uv = [0,0, 1,1, 1,0];
+      right1.drawTriangle3DUV();
       var right2 = new Triangle([1.0,0.0,0.0, 1.0,1.0,-1.0, 1.0,1.0,0.0 ]);
-      right2.drawTriangle3D();
+      right2.uv = [0,0, 1,1, 0,1];
+      right2.drawTriangle3DUV();
       //drawTriangle3D( [1.0,0.0,0.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
       //drawTriangle3D( [1.0,0.0,0.0, 1.0,1.0,-1.0, 1.0,1.0,0.0 ]);
 
@@ -79,9 +82,11 @@ class Cube{
 
       //back
       var back1 = new Triangle([0.0,0.0,-1.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
-      back1.drawTriangle3D();
+      back1.uv = [0,0, 1,1, 1,0];
+      back1.drawTriangle3DUV();
       var back2 = new Triangle([0.0,0.0,-1.0, 1.0,1.0,-1.0, 0.0,1.0,-1.0 ]);
-      back2.drawTriangle3D();
+      back2.uv = [0,0, 1,1, 0,1];
+      back2.drawTriangle3DUV();
       //drawTriangle3D( [0.0,0.0,-1.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
       //drawTriangle3D( [0.0,0.0,-1.0, 1.0,1.0,-1.0, 0.0,1.0,-1.0 ]);
 
@@ -97,9 +102,11 @@ class Cube{
 
       //top
       var top1 = new Triangle([0.0,1.0,0.0, 1.0,1.0,-1.0, 0.0,1.0,-1.0 ]);
-      top1.drawTriangle3D();
+      top1.uv = [0,0, 1,1, 1,0];
+      top1.drawTriangle3DUV();
       var top2 = new Triangle([0.0,1.0,0.0, 1.0,1.0,-1.0, 1.0,1.0,0.0 ]);
-      top2.drawTriangle3D();
+      top2.uv = [0,0, 1,1, 0,1];
+      top2.drawTriangle3DUV();
       //drawTriangle3D( [0.0,1.0,0.0, 1.0,1.0,-1.0, 0.0,1.0,-1.0 ]);
       //drawTriangle3D( [0.0,1.0,0.0, 1.0,1.0,-1.0, 1.0,1.0,0.0 ]);
 
@@ -115,9 +122,11 @@ class Cube{
       
       //bottom
       var bottom1 = new Triangle([0.0,0.0,0.0, 1.0,0.0,-1.0, 1.0,0.0,0.0 ]);
-      bottom1.drawTriangle3D();
+      bottom1.uv = [0,0, 1,1, 1,0];
+      bottom1.drawTriangle3DUV();
       var bottom2 = new Triangle([0.0,0.0,0.0, 1.0,0.0,-1.0, 0.0,0.0,-1.0 ]);
-      bottom2.drawTriangle3D();
+      bottom2.uv = [0,0, 1,1, 0,1];
+      bottom2.drawTriangle3DUV();
       //drawTriangle3D( [0.0,0.0,0.0, 1.0,0.0,-1.0, 1.0,0.0,0.0 ]);
       //drawTriangle3D( [0.0,0.0,0.0, 1.0,0.0,-1.0, 0.0,0.0,-1.0 ]);
 
