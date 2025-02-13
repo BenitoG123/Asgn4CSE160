@@ -11,7 +11,7 @@ var VSHADER_SOURCE = `
   uniform mat4 u_ProjectionMatrix;
   void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
-    //gl_Position = u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
+    
     v_UV = a_UV;
   }`
 
@@ -33,6 +33,8 @@ var FSHADER_SOURCE = `
     } else {                              //Error, put Redish color
       gl_FragColor = vec4(1,.2,.2,1);
     }
+
+    //gl_FragColor = vec4(1.0);
 
   }`
 
@@ -161,6 +163,8 @@ let g_msize = 1;
 let g_animation = false;
 let g_animation2 = false;
 
+let g_camera = new Camera();
+
 
 function addActionsForHtmlUI(){
 
@@ -288,6 +292,7 @@ function main() {
   // Register function (event handler) to be called on a mouse press
   //canvas.mouseEvent.shiftKey = shiftclick;
   canvas.onmousemove = function(ev) { if(ev.buttons == 1) { click(ev) } };
+  document.onkeydown = keydown;
 
 
   initTextures();
@@ -320,6 +325,30 @@ function tick() {
 
 
 
+function keydown(ev) {
+
+  if (ev.keyCode == 87) { // w
+    g_camera.forward();
+    //console.log(g_eye.elements[0], g_eye.elements[1], g_eye.elements[2], g_at.elements[0], g_at.elements[1], g_at.elements[2], g_up.elements[0], g_up.elements[1], g_up.elements[2]);
+  } else 
+  if (ev.keyCode == 65) { // a
+    g_camera.left();
+  } else 
+  if (ev.keyCode == 83) { // s
+    g_camera.back();
+  } else 
+  if (ev.keyCode == 68) { // d
+    g_camera.right();
+  } else
+  if (ev.keyCode == 68) { // q
+    g_camera.rotateLeft();
+  } else
+  if (ev.keyCode == 68) { // e
+    g_camera.rotateRight();
+  }
+
+}
+
 
 function updateAnimationAngles() {
   if (g_animation) {
@@ -333,18 +362,40 @@ function updateAnimationAngles() {
   }
 }
 
+/*
 var g_eye = new Vector3();
 g_eye[0] = 0;
 g_eye[1] = 0;
-g_eye[2] = 3;
+g_eye[2] = 0;
 var g_at = new Vector3();
 g_at[0] = 0;
 g_at[1] = 0;
-g_at[2] = 100;
+g_at[2] = -1;
 var g_up = new Vector3();
 g_up[0] = 0;
 g_up[1] = 1;
 g_up[2] = 0;
+*/
+
+
+//console.log(g_camera);
+
+
+var g_map = [];
+
+function drawMap() {
+  for (x=0; x<32; x++) {
+    for (y=0; y<32; y++) {
+      if (g_map[x][y] > 0) {
+        var block = new Cube([1.0,g_map[x][y],1.0,1.0]);
+        block.matrix.translate(0, 0.75, 0);
+        block.matrix.translate(x-16, g_map[x][y], y-16);
+        block.matrix.scale(0.3,0.3,0.3);
+        block.render();
+      }
+    }
+  }
+}
 
 function renderAllShapes() {
 
@@ -353,14 +404,15 @@ function renderAllShapes() {
 
   //var xAngleRads = g_globalXAngle * Math.PI/180;
 
-
-
   var projMat = new Matrix4();
-  projMat.setPerspective(60, canvas.width/canvas.height, 1, 100); //(fov, aspect, near, far)
+  projMat.setPerspective(60, canvas.width/canvas.height, 0.1, 1000); //(fov, aspect, near, far)
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
 
   var viewMat = new Matrix4();
-  viewMat.setLookAt(g_eye[0],g_eye[1],g_eye[2], g_at[0],g_at[1],g_at[2], g_up[0],g_up[1],g_up[2]); // (eye, at, up);
+  viewMat.setLookAt(
+      g_camera.eye.x,g_camera.eye.y,g_camera.eye.z, 
+      g_camera.at.x,g_camera.at.y,g_camera.at.z, 
+      g_camera.up.x,g_camera.up.y,g_camera.up.z); // (eye, at, up);
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
 
@@ -372,6 +424,23 @@ function renderAllShapes() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT);
+
+
+
+  //Draw the floor
+  var floor = new Cube([0.0,1.0,0.0,1.0]);
+  floor.textureNum = -2;
+  floor.matrix.translate(0, -0.75, 0.0);
+  floor.matrix.translate(-5, 0, 5);
+  floor.matrix.scale(10, 0, 10);
+  floor.render();
+
+  //draw the sky
+  var sky = new Cube([0.0, 0.0, 1.0, 1.0]);
+  sky.textureNum = 0;
+  sky.matrix.translate(-25, -15, 25);
+  sky.matrix.scale(50,50,50);
+  sky.render();
 
   
   var octbody = new Octagon3d([1.0,0.0,1.0,1.0]);
@@ -876,8 +945,8 @@ function click(ev) {
 
   g_globalXAngle += x*mousesense;
   g_globalYAngle += y*mousesense;
-  console.log("global angle values", g_globalXAngle, g_globalYAngle);
-  console.log(typeof(g_globalXAngle))
+  //console.log("global angle values", g_globalXAngle, g_globalYAngle);
+  //console.log(typeof(g_globalXAngle))
 
   //Draw every shape
   renderAllShapes();
