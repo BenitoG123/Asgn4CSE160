@@ -52,6 +52,7 @@ var FSHADER_SOURCE = `
   let u_GlobalRotateMatrix;
   let u_Sampler0;
   let u_whichTexture;
+  let g_camera;
 
 function setupWebGL() {
   //retrieve <canvas> element
@@ -141,7 +142,39 @@ function connectVariablesToGLSL(){
 
     //set an initial value for this matrix to identity
     var identityM = new Matrix4();
+    
     gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
+
+    g_camera = new Camera();
+    g_camera.eye = new Vector3([0,0,-3]);
+    g_camera.at = new Vector3([0,0,-100]);
+    g_camera.up = new Vector3([0, 1, 0]);
+
+    var projMat = g_camera.proj;
+    var viewMat = g_camera.view;
+    var globalRotMat = new Matrix4().rotate(g_globalXAngle, 0, 1, 0);
+
+    globalRotMat.rotate(g_globalYAngle, 1, 0, 0);
+
+    projMat.setPerspective(60, canvas.width/canvas.height, 0.1, 1000); //(fov, aspect, near, far)
+
+    /*
+    viewMat.setLookAt(
+        g_eye[0],g_eye[1],g_eye[2], 
+        g_at[0],g_at[1],g_at[2], 
+        g_up[0],g_up[1],g_up[2]); // (eye, at, up);
+        */
+        viewMat.setLookAt(
+          g_camera.eye[0],g_camera.eye[1],g_camera.eye[2], 
+          g_camera.at[0],g_camera.at[1],g_camera.at[2], 
+          g_camera.up[0],g_camera.up[1],g_camera.up[2]);
+    
+    gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
+    gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
+    gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
+  
+
+  
 }
 
 //Constants
@@ -163,7 +196,7 @@ let g_msize = 1;
 let g_animation = false;
 let g_animation2 = false;
 
-let g_camera = new Camera();
+
 
 
 function addActionsForHtmlUI(){
@@ -362,7 +395,7 @@ function updateAnimationAngles() {
   }
 }
 
-/*
+
 var g_eye = new Vector3();
 g_eye[0] = 0;
 g_eye[1] = 0;
@@ -375,7 +408,7 @@ var g_up = new Vector3();
 g_up[0] = 0;
 g_up[1] = 1;
 g_up[2] = 0;
-*/
+
 
 
 //console.log(g_camera);
@@ -404,21 +437,28 @@ function renderAllShapes() {
 
   //var xAngleRads = g_globalXAngle * Math.PI/180;
 
-  var projMat = new Matrix4();
-  projMat.setPerspective(60, canvas.width/canvas.height, 0.1, 1000); //(fov, aspect, near, far)
+  var projMat = g_camera.proj;
+  //projMat.setPerspective(60, canvas.width/canvas.height, 0.1, 1000); //(fov, aspect, near, far)
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
 
-  var viewMat = new Matrix4();
+  var viewMat = g_camera.view;
+  /*
   viewMat.setLookAt(
-      g_camera.eye.x,g_camera.eye.y,g_camera.eye.z, 
-      g_camera.at.x,g_camera.at.y,g_camera.at.z, 
-      g_camera.up.x,g_camera.up.y,g_camera.up.z); // (eye, at, up);
+      g_eye[0],g_eye[1],g_eye[2], 
+      g_at[0],g_at[1],g_at[2], 
+      g_up[0],g_up[1],g_up[2]); // (eye, at, up);
+      */
+     
+  viewMat.setLookAt(
+        g_camera.eye[0],g_camera.eye[1],g_camera.eye[2], 
+        g_camera.at[0],g_camera.at[1],g_camera.at[2], 
+        g_camera.up[0],g_camera.up[1],g_camera.up[2]); // (eye, at, up);
+
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
-
-
 
   var globalRotMat = new Matrix4().rotate(g_globalXAngle, 0, 1, 0);
   globalRotMat.rotate(g_globalYAngle, 1, 0, 0);
+  
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
 
   // Clear <canvas>
