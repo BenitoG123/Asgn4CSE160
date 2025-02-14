@@ -165,9 +165,9 @@ function connectVariablesToGLSL(){
         g_up[0],g_up[1],g_up[2]); // (eye, at, up);
         */
         viewMat.setLookAt(
-          g_camera.eye[0],g_camera.eye[1],g_camera.eye[2], 
-          g_camera.at[0],g_camera.at[1],g_camera.at[2], 
-          g_camera.up[0],g_camera.up[1],g_camera.up[2]);
+          g_camera.eye.x,g_camera.eye.y,g_camera.eye.z, 
+          g_camera.at.x,g_camera.at.y,g_camera.at.z, 
+          g_camera.up.x,g_camera.up.y,g_camera.up.z);
     
     gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
     gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
@@ -362,22 +362,28 @@ function keydown(ev) {
 
   if (ev.keyCode == 87) { // w
     g_camera.forward();
+    console.log("w");
     //console.log(g_eye.elements[0], g_eye.elements[1], g_eye.elements[2], g_at.elements[0], g_at.elements[1], g_at.elements[2], g_up.elements[0], g_up.elements[1], g_up.elements[2]);
   } else 
   if (ev.keyCode == 65) { // a
     g_camera.left();
+    console.log("a");
   } else 
   if (ev.keyCode == 83) { // s
     g_camera.back();
+    console.log("s");
   } else 
   if (ev.keyCode == 68) { // d
     g_camera.right();
+    console.log("d");
   } else
   if (ev.keyCode == 68) { // q
     g_camera.rotateLeft();
+    console.log("q");
   } else
   if (ev.keyCode == 68) { // e
     g_camera.rotateRight();
+    console.log("e");
   }
 
 }
@@ -448,18 +454,26 @@ function renderAllShapes() {
       g_at[0],g_at[1],g_at[2], 
       g_up[0],g_up[1],g_up[2]); // (eye, at, up);
       */
+     //console.log("eye", g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2]);
+     //console.log("eyexyz", g_camera.eye.x, g_camera.eye.y, g_camera.eye.z);
      
   viewMat.setLookAt(
-        g_camera.eye[0],g_camera.eye[1],g_camera.eye[2], 
-        g_camera.at[0],g_camera.at[1],g_camera.at[2], 
-        g_camera.up[0],g_camera.up[1],g_camera.up[2]); // (eye, at, up);
+        g_camera.eye.x,g_camera.eye.y,g_camera.eye.z, 
+        g_camera.at.x,g_camera.at.y,g_camera.at.z, 
+        g_camera.up.x,g_camera.up.y,g_camera.up.z); // (eye, at, up);
+
+  
 
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
   var globalRotMat = new Matrix4().rotate(g_globalXAngle, 0, 1, 0);
   globalRotMat.rotate(g_globalYAngle, 1, 0, 0);
-  
+
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
+
+  console.log("viewMat", viewMat);
+  //console.log("projMat", projMat);
+  //console.log("rotationMat", globalRotMat);
 
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
