@@ -444,7 +444,7 @@ function renderAllShapes() {
   //var xAngleRads = g_globalXAngle * Math.PI/180;
 
   var projMat = g_camera.proj;
-  //projMat.setPerspective(60, canvas.width/canvas.height, 0.1, 1000); //(fov, aspect, near, far)
+  projMat.setPerspective(60, canvas.width/canvas.height, 0.1, 1000); //(fov, aspect, near, far)
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
 
   var viewMat = g_camera.view;
@@ -458,10 +458,12 @@ function renderAllShapes() {
      //console.log("eyexyz", g_camera.eye.x, g_camera.eye.y, g_camera.eye.z);
      
   viewMat.setLookAt(
-        g_camera.eye.x,g_camera.eye.y,g_camera.eye.z, 
-        g_camera.at.x,g_camera.at.y,g_camera.at.z, 
-        g_camera.up.x,g_camera.up.y,g_camera.up.z); // (eye, at, up);
+        g_camera.eye[0],g_camera.eye[1],g_camera[2], 
+        g_camera.at[0],g_camera.at[1],g_camera.at[2], 
+        g_camera.up[0],g_camera.up[1],g_camera.up[2]); // (eye, at, up);
 
+        //console.log(g_camera);
+        //console.log(viewMat)
   
 
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
@@ -471,9 +473,23 @@ function renderAllShapes() {
 
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
 
-  console.log("viewMat", viewMat);
-  //console.log("projMat", projMat);
+  //console.log("viewMat", viewMat.elements);
+  //console.log("projMat", projMat.elements);
   //console.log("rotationMat", globalRotMat);
+
+  var temp = new Vector3(1,0,0);
+  temp[0] = 1;
+  temp[1] = 0;
+  temp[2] = 0;
+  temp.elements[0] = 1;
+  /*temp.x = 1;
+  temp.y = 0;
+  temp.z = 0;*/
+  temp = temp.add(temp);
+  var tempM = new Matrix4();
+  tempM = [temp.x, temp.y, temp.z, temp.x, temp.y, temp.z, temp.x, temp.y, temp.z,];
+
+  //console.log("temp", temp);
 
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);

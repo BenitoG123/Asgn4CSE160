@@ -7,36 +7,45 @@ class Camera {
         this.speed = 0.05;
 
         this.eye = new Vector3(0,0,0);
-        this.eye.x = 0;
-        this.eye.y = 0;
-        this.eye.z = 0;
+        this.eye[0] = 0;
+        this.eye[1] = 0;
+        this.eye[2] = 0;
 
         this.at = new Vector3(0,0,-1);
-        this.at.x = 0;
-        this.at.y = 0;
-        this.at.z = -1;
+        this.at[0] = 0;
+        this.at[1] = 0;
+        this.at[2] = -1;
 
         this.up = new Vector3(0,1,0);
-        this.up.x = 0;
-        this.up.y = 1;
-        this.up.z = 0;
+        this.up[0] = 0;
+        this.up[1] = 1;
+        this.up[2] = 0;
 
         this.view = new Matrix4();
+        
         this.view.setLookAt(
-            this.eye.x,this.eye.y,this.eye.z, 
-            this.at.x,this.at.y,this.at.z, 
-            this.up.x,this.up.y,this.up.z); // (eye, at, up);
+            this.eye[0],this.eye[1],this.eye[2], 
+            this.at[0],this.at[1],this.at[2], 
+            this.up[0],this.up[1],this.up[2]); // (eye, at, up);
 
         this.proj = new Matrix4();
         this.proj.setPerspective(this.fov, canvas.width/canvas.height, 0.1, 1000);
     }
 
     forward() {
+        console.log(this.eye);
         var d = new Vector3();
-        d = this.at.sub(this.eye);
-        d = d.normalize();
-        this.eye = this.eye.add(d);
-        this.at = this.at.add(d);
+        //d = this.at.sub(this.eye);
+        d = this.at;
+        console.log("d", d);
+        console.log("at", this.at);
+        d.sub(this.eye);
+        console.log("d", d);
+        d.normalize();
+        console.log("d", d);
+        this.eye.add(d);
+        this.at.add(d);
+        console.log(this.eye);
     }
 
     back() {
