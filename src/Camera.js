@@ -5,14 +5,17 @@ class Camera {
         this.y = 0;
         this.xAngle = 5;
         this.speed = 0.05;
+        this.theta = 0;
+        //this.newx = 0;
+        //this.newz = 0;
 
         this.eye = new Vector3([0,0,-3]);
-        this.eye.elements[0] = 0;
+        this.eye.elements[0] = 0.25;
         this.eye.elements[1] = 0;
         this.eye.elements[2] = -3;
 
         this.at = new Vector3([0,0,-1]);
-        this.at.elements[0] = 0;
+        this.at.elements[0] = 0.25;
         this.at.elements[1] = 0;
         this.at.elements[2] = -1;
 
@@ -46,10 +49,11 @@ class Camera {
         at_copy.sub(this.eye);
         //console.log("d after sub", d);
         at_copy.normalize();
+        at_copy.div(2);
         //console.log("at_copy after normal", at_copy);
         this.eye.add(at_copy);
         this.at.add(at_copy);
-        //console.log("final eye", this.eye);
+        console.log("final eye", this.eye);
     }
 
     back() {
@@ -57,6 +61,7 @@ class Camera {
         //var 
         at_copy.sub(this.eye);
         at_copy.normalize();
+        at_copy.div(2);
         this.eye.sub(at_copy);
         this.at.sub(at_copy);
     }
@@ -71,11 +76,13 @@ class Camera {
         at_copy.sub(this.eye);
         //console.log("d.elements left", d.elements);
         at_copy.normalize();
+        //at_copy.div(2);
         //console.log("d.elements", d.elements);
         var s = new Vector3();
 
         s = Vector3.cross(this.up, at_copy);
         s.normalize();
+        s.div(2);
         this.eye.add(s);
         this.at.add(s);
     }
@@ -90,6 +97,7 @@ class Camera {
         var s = new Vector3();
         s = Vector3.cross(at_copy, this.up);
         s = s.normalize();
+        s.div(2);
         this.eye = this.eye.add(s);
         this.at = this.at.add(s);
     }
@@ -98,8 +106,8 @@ class Camera {
         //debugger
         var at_copy = new Vector3(this.at.elements);
         var eye_copy = new Vector3(this.eye.elements);
-        var up_copy = new Vector3(this.up.elements);
-        var rotateMatrix = new Matrix4();
+        //var up_copy = new Vector3(this.up.elements);
+        //var rotateMatrix = new Matrix4();
         /*
 
         at_copy.sub(this.eye);
@@ -149,14 +157,19 @@ class Camera {
 
         var x_rad = at_copy.elements[0]*Math.PI/180;
         var z_rad = at_copy.elements[2]*Math.PI/180;
+
+        console.log(this.theta);
         
-        var theta = Math.atan(z_rad,x_rad);
-        console.log(theta);
+        this.theta = Math.atan(z_rad/x_rad);
+        //console.log(this.theta);
 
-        theta += (5 * Math.PI/180); //add 5 degrees in radians
+        this.theta -= (5 * Math.PI/180); //add 5 degrees in radians
+        //console.log("theta", this.theta);
 
-        var newx = r * Math.cos(theta);
-        var newz = r * Math.sin(theta);
+        var newx = r * Math.cos(this.theta);
+        var newz = r * Math.sin(this.theta);
+        console.log("newx", newx);
+        console.log("newz", newz);
         at_copy.elements[0] = newx;
         at_copy.elements[2] = newz;
 
@@ -164,6 +177,11 @@ class Camera {
         this.at.set(eye_copy);
         console.log(this.at.elements);
         
+        /*if (this.theta > Math.PI/2){
+            console.log("bigger than pi/2");
+            this.theta = this.theta-(Math.PI/2);
+
+        }*/
 
     }
 
@@ -174,22 +192,49 @@ class Camera {
         at_copy.sub(this.eye);
         at_copy.normalize();
 
-        var r = Math.sqrt(at_copy.elements[0]*at_copy.elements[0] + at_copy.elements[1]*at_copy.elements[1])
+        var r = Math.sqrt((at_copy.elements[0]*at_copy.elements[0]) + (at_copy.elements[2]*at_copy.elements[2]))
 
         var x_rad = at_copy.elements[0]*Math.PI/180;
-        var y_rad = at_copy.elements[1]*Math.PI/180;
+        var z_rad = at_copy.elements[2]*Math.PI/180;
+
+        console.log(this.theta);
+        if (this.theta > Math.PI/2){
+            console.log("bigger than pi/2");
+            this.theta = this.theta-(Math.PI/2);
+
+        }
         
-        var theta = Math.atan(y_rad,x_rad);
+        this.theta = Math.atan(z_rad/x_rad);
+        
+        console.log("after atan", this.theta);
 
-        theta -= (5 * Math.PI/180); //add 5 degrees in radians
+        this.theta += (5 * Math.PI/180); //add 5 degrees in radians
+        //console.log("theta", this.theta);
 
-        var newx = r * Math.cos(theta);
-        var newy = r * Math.sin(theta);
+        var newx = r * Math.cos(this.theta);
+        var newz = r * Math.sin(this.theta);
+        //var newx = 0.07357639459
+        //var newz = -0.04687340102
+        console.log("newx", newx);
+        console.log("newz", newz);
         at_copy.elements[0] = newx;
-        at_copy.elements[1] = newy;
+        at_copy.elements[2] = newz;
 
         eye_copy.add(at_copy);
         this.at.set(eye_copy);
+        console.log(this.at.elements);
+
+    }
+
+    placeblock(){
+        var at_copy = new Vector3(this.at.elements);
+        at_copy.sub(this.eye);
+        //console.log("at_copy.elements right", at_copy.elements);
+        at_copy.normalize();
+        
+    }
+
+    deleteblock(){
 
     }
     

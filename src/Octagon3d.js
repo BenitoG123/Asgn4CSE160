@@ -8,6 +8,7 @@ class Octagon3d{
       //this.size = 5.0;
       //this.segments = segments;
       //this.alpha = 0.4;
+      this.textureNum = 7;
       this.matrix = new Matrix4();
       this.buffer = null;
       this.vertices = null;
@@ -21,9 +22,12 @@ class Octagon3d{
       //var size = this.size;
       //var alpha = this.alpha;
       var height = 0.4;
+
+      gl.uniform1i(u_whichTexture, this.textureNum);
   
       gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
   
+      
 
 
       //bottom octagon

@@ -22,6 +22,14 @@ var FSHADER_SOURCE = `
   uniform vec4 u_FragColor;
   uniform sampler2D u_Sampler0;
   uniform sampler2D u_Sampler1;
+  uniform sampler2D u_Sampler2;
+  uniform sampler2D u_Sampler3;
+  uniform sampler2D u_Sampler4;
+  uniform sampler2D u_Sampler5;
+  uniform sampler2D u_Sampler6;
+  uniform sampler2D u_Sampler7;
+  uniform sampler2D u_Sampler8;
+  //uniform sampler2D u_Sampler9;
   uniform int u_whichTexture;
   void main() {
 
@@ -33,6 +41,20 @@ var FSHADER_SOURCE = `
       gl_FragColor = texture2D(u_Sampler0, v_UV);
     } else if (u_whichTexture == 1) {     //Use texture1
       gl_FragColor = texture2D(u_Sampler1, v_UV);
+    } else if (u_whichTexture == 2) {     //Use texture2
+      gl_FragColor = texture2D(u_Sampler2, v_UV);
+    } else if (u_whichTexture == 3) {     //Use texture3
+      gl_FragColor = texture2D(u_Sampler3, v_UV);
+    } else if (u_whichTexture == 4) {     //Use texture4
+      gl_FragColor = texture2D(u_Sampler4, v_UV);
+    } else if (u_whichTexture == 5) {     //Use texture5
+      gl_FragColor = texture2D(u_Sampler5, v_UV);
+    } else if (u_whichTexture == 6) {     //Use texture6
+      gl_FragColor = texture2D(u_Sampler6, v_UV);
+    } else if (u_whichTexture == 7) {     //Use texture7
+      gl_FragColor = texture2D(u_Sampler7, v_UV);
+    } else if (u_whichTexture == 8) {     //Use texture8
+      gl_FragColor = texture2D(u_Sampler8, v_UV);
     } else {                              //Error, put Redish color
       gl_FragColor = vec4(1,.2,.2,1);
     }
@@ -55,6 +77,13 @@ var FSHADER_SOURCE = `
   let u_GlobalRotateMatrix;
   let u_Sampler0;
   let u_Sampler1;
+  let u_Sampler2;
+  let u_Sampler3;
+  let u_Sampler4;
+  let u_Sampler5;
+  let u_Sampler6;
+  let u_Sampler7;
+  let u_Sampler8;
   let u_whichTexture;
   let g_camera;
 
@@ -207,16 +236,7 @@ let g_animation2 = false;
 
 function addActionsForHtmlUI(){
 
-  //button events (shape type)
-  //document.getElementById('green').onclick = function() { g_selectedColor = [0.0, 1.0, 0.0, 1.0]; };
-  //document.getElementById('red').onclick = function() { g_selectedColor = [1.0, 0.0, 0.0, 1.0]; };
-  //document.getElementById('clearButton').onclick = function() { g_shapesList = []; renderAllShapes(); };
-
-  //document.getElementById('pointButton').onclick = function() {g_selectedType=POINT};
-  //document.getElementById('triButton').onclick = function() {g_selectedType=TRIANGLE};
-  //document.getElementById('circleButton').onclick = function() {g_selectedType=CIRCLE};
-  //document.getElementById('imgButton').onclick = makeImg;
-
+  
   document.getElementById('animationOnButton').onclick = function() {g_animation=true};
   document.getElementById('animationOffButton').onclick = function() {g_animation=false};
 
@@ -247,8 +267,9 @@ function addActionsForHtmlUI(){
 
 //book functions for UV
 
-function initTextures0() {
+function initTextures() {
   
+  //night sky
   var image = new Image();  // Create the image object
   if (!image) {
     console.log('Failed to create the image object');
@@ -257,15 +278,9 @@ function initTextures0() {
   // Register the event handler to be called on loading an image
   image.onload = function(){ sendTextureToTEXTURE0(image); };
   // Tell the browser to load an image
-  image.src = '../textures/sky.jpg';
+  image.src = '../textures/night_sky.webp';
 
-  //repeat for more textures
-
-  return true;
-}
-
-function initTextures1() {
-
+  //dirt
   var image2 = new Image();  // Create the image object
   if (!image2) {
     console.log('Failed to create the image2 object');
@@ -276,10 +291,84 @@ function initTextures1() {
   // Tell the browser to load an image
   image2.src = '../textures/dirt_texture.jpg';
 
+  //wood
+  var image3 = new Image();  // Create the image object
+  if (!image3) {
+    console.log('Failed to create the image3 object');
+    return false;
+  }
+  // Register the event handler to be called on loading an image
+  image3.onload = function(){ sendTextureToTEXTURE2(image3); };
+  // Tell the browser to load an image
+  image3.src = '../textures/wood.jpg';
+
+  //plank
+  var image4 = new Image();  // Create the image object
+  if (!image4) {
+    console.log('Failed to create the image4 object');
+    return false;
+  }
+  // Register the event handler to be called on loading an image
+  image4.onload = function(){ sendTextureToTEXTURE3(image4); };
+  // Tell the browser to load an image
+  image4.src = '../textures/plank.jpg';
+
+  //cobble
+  var image5 = new Image();  // Create the image object
+  if (!image5) {
+    console.log('Failed to create the image5 object');
+    return false;
+  }
+  // Register the event handler to be called on loading an image
+  image5.onload = function(){ sendTextureToTEXTURE4(image5); };
+  // Tell the browser to load an image
+  image5.src = '../textures/cobble_stone.png';
+
+  var image6 = new Image();  // Create the image object
+  if (!image6) {
+    console.log('Failed to create the image object');
+    return false;
+  }
+  // Register the event handler to be called on loading an image
+  image6.onload = function(){ sendTextureToTEXTURE5(image6); };
+  // Tell the browser to load an image
+  image6.src = '../textures/door_top.png';
+
+  var image7 = new Image();  // Create the image object
+  if (!image7) {
+    console.log('Failed to create the image7 object');
+    return false;
+  }
+  // Register the event handler to be called on loading an image
+  image7.onload = function(){ sendTextureToTEXTURE6(image7); };
+  // Tell the browser to load an image
+  image7.src = '../textures/door_bottom.png';
+
+  var image8 = new Image();  // Create the image object
+  if (!image8) {
+    console.log('Failed to create the image8 object');
+    return false;
+  }
+  // Register the event handler to be called on loading an image
+  image8.onload = function(){ sendTextureToTEXTURE7(image8); };
+  // Tell the browser to load an image
+  image8.src = '../textures/polished_andosite.png';
+
+  var image9 = new Image();  // Create the image object
+  if (!image9) {
+    console.log('Failed to create the image9 object');
+    return false;
+  }
+  // Register the event handler to be called on loading an image
+  image9.onload = function(){ sendTextureToTEXTURE8(image9); };
+  // Tell the browser to load an image
+  image9.src = '../textures/water.jpeg';
+
   //repeat for more textures
 
   return true;
 }
+
 
 function sendTextureToTEXTURE0(image) {
 
@@ -330,11 +419,183 @@ function sendTextureToTEXTURE1(image) {
   
   // Set the texture unit 0 to the sampler
   gl.uniform1i(u_Sampler1, 1);
-  
-  //gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
 
-  //gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
   console.log("finished loadTexture1");
+}
+
+function sendTextureToTEXTURE2(image) {
+
+  var texture = gl.createTexture();   // Create a texture object
+  if (!texture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE2);
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture parameters
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  
+  // Set the texture unit 0 to the sampler
+  gl.uniform1i(u_Sampler2, 2);
+
+  console.log("finished loadTexture2");
+}
+
+function sendTextureToTEXTURE3(image) {
+
+  var texture = gl.createTexture();   // Create a texture object
+  if (!texture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE3);
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture parameters
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  
+  // Set the texture unit 0 to the sampler
+  gl.uniform1i(u_Sampler3, 3);
+
+  console.log("finished loadTexture3");
+}
+
+function sendTextureToTEXTURE4(image) {
+
+  var texture = gl.createTexture();   // Create a texture object
+  if (!texture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE4);
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture parameters
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  
+  // Set the texture unit 0 to the sampler
+  gl.uniform1i(u_Sampler4, 4);
+
+  console.log("finished loadTexture4");
+}
+
+function sendTextureToTEXTURE5(image) {
+
+  var texture = gl.createTexture();   // Create a texture object
+  if (!texture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE5);
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture parameters
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  
+  // Set the texture unit 0 to the sampler
+  gl.uniform1i(u_Sampler5, 5);
+
+  console.log("finished loadTexture5");
+}
+
+function sendTextureToTEXTURE6(image) {
+
+  var texture = gl.createTexture();   // Create a texture object
+  if (!texture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE6);
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture parameters
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  
+  // Set the texture unit 0 to the sampler
+  gl.uniform1i(u_Sampler6, 6);
+
+  console.log("finished loadTexture6");
+}
+
+function sendTextureToTEXTURE7(image) {
+
+  var texture = gl.createTexture();   // Create a texture object
+  if (!texture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE7);
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture parameters
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  
+  // Set the texture unit 0 to the sampler
+  gl.uniform1i(u_Sampler7, 7);
+
+  console.log("finished loadTexture7");
+}
+
+function sendTextureToTEXTURE8(image) {
+
+  var texture = gl.createTexture();   // Create a texture object
+  if (!texture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE8);
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture parameters
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  
+  // Set the texture unit 0 to the sampler
+  gl.uniform1i(u_Sampler8, 8);
+
+  console.log("finished loadTexture8");
 }
 
 
@@ -363,6 +624,8 @@ function convertCorrdinatesEventToGL(ev){
   return([x,y]);
 }
 
+let g_firstClick = true;
+
 function main() {
 
   setupWebGL();
@@ -374,12 +637,14 @@ function main() {
 
   // Register function (event handler) to be called on a mouse press
   //canvas.mouseEvent.shiftKey = shiftclick;
+
+  canvas.onmouseup = function() { g_firstClick = true };
   canvas.onmousemove = function(ev) { if(ev.buttons == 1) { click(ev) } };
   document.onkeydown = keydown;
 
 
-  initTextures0();
-  initTextures1();
+  initTextures();
+  
 
 
   // Specify the color for clearing <canvas>
@@ -435,6 +700,14 @@ function keydown(ev) {
   if (ev.keyCode == 69) { // e
     g_camera.rotateRight();
     console.log("e");
+  } else
+  if (ev.keyCode == 74) { // j
+    g_camera.placeblock();
+    console.log("j");
+  } else
+  if (ev.keyCode == 75) { // k
+    g_camera.deleteblock();
+    console.log("k");
   }
 
 }
@@ -471,7 +744,7 @@ g_up.elements[2] = 0;
 //console.log(g_camera);
 
 
-var g_map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+var g_map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
              [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
              [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
              [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -509,17 +782,21 @@ function drawMap() {
   for (x=0; x<32; x++) {
     for (y=0; y<32; y++) {
       if (g_map[x][y] > 0) {
-        var block = new Cube([1.0,1.0,1.0,1.0]);
-        block.textureNum = 1;
-        block.matrix.translate(0, -0.75, 0);
-        block.matrix.scale(0.3,0.3,0.3);
-        block.matrix.translate(x-16, g_map[x][y], y-16);
-        
-        block.render();
+          for (loop=0; loop < g_map[x][y]; loop++) {
+          var block = new Cube([1.0,1.0,1.0,1.0]);
+          block.textureNum = 1;
+          block.matrix.translate(0, -1, 0);
+          block.matrix.scale(0.5,0.5,0.5);
+          block.matrix.translate(x-16, loop+1, y-16);
+          
+          block.render();
+        }
       }
     }
   }
 }
+
+
 
 function renderAllShapes() {
 
@@ -593,23 +870,26 @@ function renderAllShapes() {
   
   var octbody = new Octagon3d([1.0,0.0,1.0,1.0]);
   octbody.matrix.translate(-0.2,-0.75,-0.25);
+  octbody.textureNum = 1;
   octbody.render();
   
   
   var neck = new Cube([0.9,0.0,0.9,1.0]);
   neck.matrix.translate(-0.05,-0.4,0.30);
   neck.matrix.scale(0.1,0.3,0.1);
+  octbody.textureNum = 7;
   neck.render();
 
   var head = new Cube([0.9,0.0,0.9,1.0]);
   head.matrix.translate(-0.25,-0.20,0.5);
   head.matrix.scale(0.5,0.5,0.5);
-  head.textureNum = 0;
+  head.textureNum = 7;
   head.render();
 
   var leftEye = new Cube([1.0,1.0,1.0,1.0]);
   leftEye.matrix.translate(-0.15,0.07,0.05);
   leftEye.matrix.scale(0.1,0.1,0.1);
+  octbody.textureNum = 7;
   leftEye.render();
 
   var leftPuple = new Cube([0.0,0.0,0.0,1.0]);
@@ -620,6 +900,7 @@ function renderAllShapes() {
   var rightEye = new Cube([1.0,1.0,1.0,1.0]);
   rightEye.matrix.translate(0.05,0.07,0.05);
   rightEye.matrix.scale(0.1,0.1,0.1);
+  octbody.textureNum = 7;
   rightEye.render();
 
   var rightPuple = new Cube([0.0,0.0,0.0,1.0]);
@@ -1084,15 +1365,37 @@ function sendTextToHTML(text, htmlID) {
 var g_shapesList = [];
 var segments = 5;
 
+
+var g_x;
+var g_y;
+
 function click(ev) {
 
   //extract the event click and return it in WebGL coordinates
-  [x,y] = convertCorrdinatesEventToGL(ev);
+  var x2;
+  var y2;
+  var delta_x;
+  var delta_y;
+  if (g_firstClick == true) {
+    [g_x,g_y] = convertCorrdinatesEventToGL(ev);
+    console.log(g_x, g_y);
+  }
+
+  [x2,y2] = convertCorrdinatesEventToGL(ev);
+
+  delta_x = x2-g_x;
+  delta_y = y2-g_y;
+
+  g_firstClick = false;
+
+
+  console.log(delta_x, delta_y);
+
   //console.log("click on ", x, y);
   var mousesense = 7;
 
-  g_globalXAngle += x*mousesense;
-  g_globalYAngle += y*mousesense;
+  g_globalXAngle += delta_x*mousesense;
+  g_globalYAngle += delta_y*mousesense;
   //console.log("global angle values", g_globalXAngle, g_globalYAngle);
   //console.log(typeof(g_globalXAngle))
 
