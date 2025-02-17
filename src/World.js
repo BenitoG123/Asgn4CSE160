@@ -21,6 +21,7 @@ var FSHADER_SOURCE = `
   varying vec2 v_UV;
   uniform vec4 u_FragColor;
   uniform sampler2D u_Sampler0;
+  uniform sampler2D u_Sampler1;
   uniform int u_whichTexture;
   void main() {
 
@@ -30,6 +31,8 @@ var FSHADER_SOURCE = `
       gl_FragColor = vec4(v_UV,1.0,1.0);
     } else if (u_whichTexture == 0) {     //Use texture0
       gl_FragColor = texture2D(u_Sampler0, v_UV);
+    } else if (u_whichTexture == 1) {     //Use texture1
+      gl_FragColor = texture2D(u_Sampler1, v_UV);
     } else {                              //Error, put Redish color
       gl_FragColor = vec4(1,.2,.2,1);
     }
@@ -51,6 +54,7 @@ var FSHADER_SOURCE = `
   let u_ViewMatrix;
   let u_GlobalRotateMatrix;
   let u_Sampler0;
+  let u_Sampler1;
   let u_whichTexture;
   let g_camera;
 
@@ -134,6 +138,12 @@ function connectVariablesToGLSL(){
       return;
     }
 
+    u_Sampler1 = gl.getUniformLocation(gl.program, 'u_Sampler1');
+    if (!u_Sampler1) {
+      console.log('Failed to get the storage location of u_Sampler1');
+      return;
+    }
+
     u_whichTexture = gl.getUniformLocation(gl.program, 'u_whichTexture');
     if (!u_whichTexture) {
       console.log('Failed to get the storage location of u_whichTexture');
@@ -146,9 +156,10 @@ function connectVariablesToGLSL(){
     gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
 
     g_camera = new Camera();
-    g_camera.eye = new Vector3([0,0,-3]);
-    g_camera.at = new Vector3([0,0,-100]);
-    g_camera.up = new Vector3([0, 1, 0]);
+    console.log("g_camera", g_camera.eye);
+    //g_camera.eye = new Vector3([0,0,-3]);
+    //g_camera.at = new Vector3([0,0,-100]);
+    //g_camera.up = new Vector3([0, 1, 0]);
 
     var projMat = g_camera.proj;
     var viewMat = g_camera.view;
@@ -158,16 +169,11 @@ function connectVariablesToGLSL(){
 
     projMat.setPerspective(60, canvas.width/canvas.height, 0.1, 1000); //(fov, aspect, near, far)
 
-    /*
-    viewMat.setLookAt(
-        g_eye[0],g_eye[1],g_eye[2], 
-        g_at[0],g_at[1],g_at[2], 
-        g_up[0],g_up[1],g_up[2]); // (eye, at, up);
-        */
+    
         viewMat.setLookAt(
-          g_camera.eye.x,g_camera.eye.y,g_camera.eye.z, 
-          g_camera.at.x,g_camera.at.y,g_camera.at.z, 
-          g_camera.up.x,g_camera.up.y,g_camera.up.z);
+          g_camera.eye.elements[0],g_camera.eye.elements[1],g_camera.eye.elements[2], 
+          g_camera.at.elements[0],g_camera.at.elements[1],g_camera.at.elements[2], 
+          g_camera.up.elements[0],g_camera.up.elements[1],g_camera.up.elements[2]);
     
     gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
     gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
@@ -241,7 +247,7 @@ function addActionsForHtmlUI(){
 
 //book functions for UV
 
-function initTextures() {
+function initTextures0() {
   
   var image = new Image();  // Create the image object
   if (!image) {
@@ -252,6 +258,23 @@ function initTextures() {
   image.onload = function(){ sendTextureToTEXTURE0(image); };
   // Tell the browser to load an image
   image.src = '../textures/sky.jpg';
+
+  //repeat for more textures
+
+  return true;
+}
+
+function initTextures1() {
+
+  var image2 = new Image();  // Create the image object
+  if (!image2) {
+    console.log('Failed to create the image2 object');
+    return false;
+  }
+  // Register the event handler to be called on loading an image
+  image2.onload = function(){ sendTextureToTEXTURE1(image2); };
+  // Tell the browser to load an image
+  image2.src = '../textures/dirt_texture.jpg';
 
   //repeat for more textures
 
@@ -283,9 +306,36 @@ function sendTextureToTEXTURE0(image) {
   //gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
 
   //gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
-  console.log("finished loadTexture");
+  console.log("finished loadTexture0");
 }
 
+function sendTextureToTEXTURE1(image) {
+
+  var texture = gl.createTexture();   // Create a texture object
+  if (!texture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
+
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE1);
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // Set the texture parameters
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  // Set the texture image
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+  
+  // Set the texture unit 0 to the sampler
+  gl.uniform1i(u_Sampler1, 1);
+  
+  //gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
+
+  //gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
+  console.log("finished loadTexture1");
+}
 
 
 
@@ -328,7 +378,8 @@ function main() {
   document.onkeydown = keydown;
 
 
-  initTextures();
+  initTextures0();
+  initTextures1();
 
 
   // Specify the color for clearing <canvas>
@@ -377,11 +428,11 @@ function keydown(ev) {
     g_camera.right();
     console.log("d");
   } else
-  if (ev.keyCode == 68) { // q
+  if (ev.keyCode == 81) { // q
     g_camera.rotateLeft();
     console.log("q");
   } else
-  if (ev.keyCode == 68) { // e
+  if (ev.keyCode == 69) { // e
     g_camera.rotateRight();
     console.log("e");
   }
@@ -401,35 +452,69 @@ function updateAnimationAngles() {
   }
 }
 
-
+/*
 var g_eye = new Vector3();
-g_eye[0] = 0;
-g_eye[1] = 0;
-g_eye[2] = 0;
+g_eye.elements[0] = 0;
+g_eye.elements[1] = 0;
+g_eye.elements[2] = 0;
 var g_at = new Vector3();
-g_at[0] = 0;
-g_at[1] = 0;
-g_at[2] = -1;
+g_at.elements[0] = 0;
+g_at.elements[1] = 0;
+g_at.elements[2] = -1;
 var g_up = new Vector3();
-g_up[0] = 0;
-g_up[1] = 1;
-g_up[2] = 0;
-
+g_up.elements[0] = 0;
+g_up.elements[1] = 1;
+g_up.elements[2] = 0;
+*/
 
 
 //console.log(g_camera);
 
 
-var g_map = [];
+var g_map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+];
 
 function drawMap() {
   for (x=0; x<32; x++) {
     for (y=0; y<32; y++) {
       if (g_map[x][y] > 0) {
-        var block = new Cube([1.0,g_map[x][y],1.0,1.0]);
-        block.matrix.translate(0, 0.75, 0);
-        block.matrix.translate(x-16, g_map[x][y], y-16);
+        var block = new Cube([1.0,1.0,1.0,1.0]);
+        block.textureNum = 1;
+        block.matrix.translate(0, -0.75, 0);
         block.matrix.scale(0.3,0.3,0.3);
+        block.matrix.translate(x-16, g_map[x][y], y-16);
+        
         block.render();
       }
     }
@@ -454,17 +539,20 @@ function renderAllShapes() {
       g_at[0],g_at[1],g_at[2], 
       g_up[0],g_up[1],g_up[2]); // (eye, at, up);
       */
-     //console.log("eye", g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2]);
-     //console.log("eyexyz", g_camera.eye.x, g_camera.eye.y, g_camera.eye.z);
-     
+
+    //console.log("eye", g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2]);
+    //console.log("eyexyz", g_camera.eye.x, g_camera.eye.y, g_camera.eye.z);
+    
+    //console.log(viewMat);
   viewMat.setLookAt(
-        g_camera.eye[0],g_camera.eye[1],g_camera[2], 
-        g_camera.at[0],g_camera.at[1],g_camera.at[2], 
-        g_camera.up[0],g_camera.up[1],g_camera.up[2]); // (eye, at, up);
+        g_camera.eye.elements[0],g_camera.eye.elements[1],g_camera.eye.elements[2], 
+        g_camera.at.elements[0],g_camera.at.elements[1],g_camera.at.elements[2], 
+        g_camera.up.elements[0],g_camera.up.elements[1],g_camera.up.elements[2]); // (eye, at, up);
 
         //console.log(g_camera);
         //console.log(viewMat)
   
+        //console.log("after update", viewMat);
 
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
@@ -477,32 +565,22 @@ function renderAllShapes() {
   //console.log("projMat", projMat.elements);
   //console.log("rotationMat", globalRotMat);
 
-  var temp = new Vector3(1,0,0);
-  temp[0] = 1;
-  temp[1] = 0;
-  temp[2] = 0;
-  temp.elements[0] = 1;
-  /*temp.x = 1;
-  temp.y = 0;
-  temp.z = 0;*/
-  temp = temp.add(temp);
-  var tempM = new Matrix4();
-  tempM = [temp.x, temp.y, temp.z, temp.x, temp.y, temp.z, temp.x, temp.y, temp.z,];
-
-  //console.log("temp", temp);
+  
 
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
 
+  //Draw map
+  drawMap();
 
   //Draw the floor
   var floor = new Cube([0.0,1.0,0.0,1.0]);
   floor.textureNum = -2;
   floor.matrix.translate(0, -0.75, 0.0);
-  floor.matrix.translate(-5, 0, 5);
-  floor.matrix.scale(10, 0, 10);
+  floor.matrix.translate(-16, 0, 16);
+  floor.matrix.scale(32, 0, 32);
   floor.render();
 
   //draw the sky
