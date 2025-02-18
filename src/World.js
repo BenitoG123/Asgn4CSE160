@@ -760,20 +760,32 @@ function keydown(ev) {
     console.log("2");
   } else
   if (ev.keyCode == 51) { // 3
-    g_placeTexture = 3;
+    g_placeTexture = 4;
     console.log("3");
   } else
   if (ev.keyCode == 52) { // 4
-    g_placeTexture = 4;
+    g_placeTexture = 7;
     console.log("4");
   } else
-  if (ev.keyCode == 53) { // 5
-    g_placeTexture = 7;
-    console.log("5");
+  //up and down
+  if (ev.keyCode == 32) { // space
+    g_camera.eye.elements[1] += 0.25;
+    g_camera.at.elements[1] += 0.25;
+    console.log("space");
   } else
-  if (ev.keyCode == 54) { // 6
-    g_placeTexture = 8;
-    console.log("6");
+  if (ev.keyCode == 16) { // shift
+    g_camera.eye.elements[1] -= 0.25;
+    g_camera.at.elements[1] -= 0.25;
+    if (g_camera.eye.elements[1] <= -1) {
+      g_camera.eye.elements[1] = -1;
+      g_camera.at.elements[1] = -1;
+    }
+    console.log("left shift");
+  } else
+  if (ev.keyCode == 73) { // I
+    g_camera.eye.elements[1] += 0.25;
+    g_camera.at.elements[1] += 0.25;
+    console.log("I");
   }
 
 }
@@ -822,12 +834,12 @@ var g_map = [[4,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,5],
              [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
              [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
              [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3],
              [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
              [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
              [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -920,11 +932,41 @@ function renderAllShapes() {
   //Draw map
   drawMap();
 
+
+  //dock
+  var floor = new Cube([0.0,1.0,0.0,1.0]);
+  floor.textureNum = 2;
+  floor.matrix.translate(0, -1.5, 0.0);
+  floor.matrix.translate(-2.5, 0.01, 16);
+  floor.matrix.scale(4, 0.02, 4);
+  floor.render();
+
+  //rail
+  for (z = 12.5; z < 16.5; z += 0.5) {
+    var rail = new Cube([0.0,1.0,0.0,1.0]);
+    rail.textureNum = 2;
+    rail.matrix.translate(0, -1.5, 0.0);
+    rail.matrix.translate(-2.5, 0.01, z);
+    rail.matrix.scale(0.5, 0.5, 0.5);
+    rail.render();
+  }
+
+  //rail
+  for (z = 12.5; z < 16.5; z += 0.5) {
+    var rail = new Cube([0.0,1.0,0.0,1.0]);
+    rail.textureNum = 2;
+    rail.matrix.translate(0, -1.5, 0.0);
+    rail.matrix.translate(1, 0.01, z);
+    rail.matrix.scale(0.5, 0.5, 0.5);
+    rail.render();
+  }
+
+
   //Draw the floor
   var floor = new Cube([0.0,1.0,0.0,1.0]);
   floor.textureNum = -2;
-  floor.matrix.translate(0, -1.75, 0.0);
-  floor.matrix.translate(-16, 0, 16);
+  floor.matrix.translate(0, -1.5, 0.0);
+  floor.matrix.translate(-16, 0.01, 16);
   floor.matrix.scale(32, 0, 32);
   floor.render();
 
@@ -998,6 +1040,18 @@ function renderAllShapes() {
   water.matrix.translate(-1, 0, 1.25);
   water.matrix.scale(1.79, 0.15, 1.79);
   water.renderfast();
+
+  //ocean
+  var ocean = new Cube([0.0,0.0,0.9,1.0]);
+  ocean.textureNum = -2;
+  ocean.matrix.translate(0, -1.5, 0.0);
+  ocean.matrix.translate(-40, 0, 40);
+  ocean.matrix.scale(80, 0, 80);
+  ocean.render();
+
+
+
+  //house
   
   var octbody = new Octagon3d([1.0,0.0,1.0,1.0]);
   octbody.matrix.translate(-0.2,-0.75,-0.25);

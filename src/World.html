@@ -38,7 +38,7 @@
     <p></p>
 
     <input type="range" hidden="hidden" min="0" max="100" value="0" class="slider" id="blueSlide">
-    <p></p>
+    <p>You can pose the statue with these sliders</p>
 
     Top Arm <input type="range" min="-45" max="45" value="-45" class="slider" id="finalSlide">
     <p></p>
@@ -49,18 +49,18 @@
     Bottom Arm <input type="range" min="-45" max="45" value="40" class="slider" id="yellowSlide">
     <p></p> 
 
-    Camera X Angle <input type="range" min="-360" max="360" value="5" class="slider" id="angleXSlide">
+    Camera X Angle <input type="range" min="-360" max="360" value="0" class="slider" id="angleXSlide">
     <p></p>
 
-    Camera Y Angle <input type="range" min="-360" max="360" value="5" class="slider" id="angleYSlide">
+    Camera Y Angle <input type="range" min="-360" max="360" value="0" class="slider" id="angleYSlide">
     <p></p>
 
     Animation<button type="button" id="animationOnButton">ON</button>
     <button type="button" id="animationOffButton">OFF</button>
     <p></p>
 
-    Poke Animation<button type="button" id="animationOnButton2">ON</button>
-    <button type="button" id="animationOffButton2">OFF</button>
+    <button hidden="hidden" type="button" id="animationOnButton2">ON</button>
+    <button hidden="hidden" type="button" id="animationOffButton2">OFF</button>
     <p></p>
 
     <input type="range" hidden="hidden" min="5" max="50" value="0" class="slider" id="sizeSlide">
@@ -71,15 +71,36 @@
     <p></p>
 
     <br>
-    <u>notes for grader</u>
-    <p>Controls:
-      Walk around with WASD
-      Place block with j
-      delete block with k
+
+    <p>Controls:<br>
+      - Walk around with WASD <br>
+      - Fly up with I or space<br>
+      - Fly down with left shift<br>
+      - Turn camera with Q and E or click and drag mouse<br>
+      - Place block with J<br>
+      - Delete block with K<br>
+      - Choose block texture with number 1, 2, 3, or 4
     </p>
     <br>
-    <p>Story:
-      klnkljdvoaernv
+    <p>Story:<br>
+      This is a small island that fisherman like to stop by and dock. <br>
+      It is said that a fisherman found the island while reeling in an octopus. <br>
+      He would then have the best haul he ever had, and this island was deemed good luck. <br>
+      Today there is a fountain with an octopus on it to wish for the island's luck for any fisherman passing by.<br>
+    </p>
+    <br>
+    <u>notes for grader:</u>
+    <p>
+      The performance should be relatively fine, if there is lag, it is likely from a garbage dump and should go away.<br>
+      For the "Wow!" rubric point I allow you to change the 
+      texture of the blocks you place down as mentioned in the Controls.<br><br>
+      
+      minor issues: <br>
+      - The Camera X angle and Camera Y angle are left over from blocky animal.<br> 
+          They still work but the place and delete block doesn't work with it.<br>
+      - The mouse movement works, but it does not go up and down, you can only look left and right. <br>
+      - If the mouse doesn't seem to be working, make sure the mouse is moving slightly becuase if the mouse comes to a full stop it can stop moving the camera. <br>
+      - I don't know why but when you press space (at least on my browser) it moves you to the bottom of the page, the space bar still works to make you fly up and you can use I instead. <br>
     </p>
 
     <script src="../lib/webgl-utils.js"></script>
