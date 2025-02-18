@@ -272,6 +272,7 @@ let g_finalAngle = -45;
 let g_msize = 1;
 let g_animation = false;
 let g_animation2 = false;
+let g_placeTexture = 1;
 
 
 
@@ -714,8 +715,6 @@ function tick() {
 }
 
 
-
-
 function keydown(ev) {
 
   if (ev.keyCode == 87) { // w
@@ -750,6 +749,31 @@ function keydown(ev) {
   if (ev.keyCode == 75) { // k
     g_camera.deleteblock();
     console.log("k");
+  } else
+  //textures
+  if (ev.keyCode == 49) { // 1
+    g_placeTexture = 1;
+    console.log("1");
+  } else
+  if (ev.keyCode == 50) { // 2
+    g_placeTexture = 2;
+    console.log("2");
+  } else
+  if (ev.keyCode == 51) { // 3
+    g_placeTexture = 3;
+    console.log("3");
+  } else
+  if (ev.keyCode == 52) { // 4
+    g_placeTexture = 4;
+    console.log("4");
+  } else
+  if (ev.keyCode == 53) { // 5
+    g_placeTexture = 7;
+    console.log("5");
+  } else
+  if (ev.keyCode == 54) { // 6
+    g_placeTexture = 8;
+    console.log("6");
   }
 
 }
@@ -820,14 +844,16 @@ var g_map = [[4,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,5],
              [2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3],
 ];
 
+
+
 function drawMap() {
   for (x=0; x<32; x++) {
     for (y=0; y<32; y++) {
       if (g_map[x][y] > 0) {
           for (loop=0; loop < g_map[x][y]; loop++) {
           var block = new Cube([1.0,1.0,1.0,1.0]);
-          block.textureNum = 1;
-          block.matrix.translate(0, -1, 0);
+          block.textureNum = g_placeTexture;
+          block.matrix.translate(0, -2, 0);
           block.matrix.scale(0.5,0.5,0.5);
           block.matrix.translate(x-16, loop+1, y-16);
           
@@ -897,7 +923,7 @@ function renderAllShapes() {
   //Draw the floor
   var floor = new Cube([0.0,1.0,0.0,1.0]);
   floor.textureNum = -2;
-  floor.matrix.translate(0, -0.75, 0.0);
+  floor.matrix.translate(0, -1.75, 0.0);
   floor.matrix.translate(-16, 0, 16);
   floor.matrix.scale(32, 0, 32);
   floor.render();
@@ -909,6 +935,69 @@ function renderAllShapes() {
   sky.matrix.scale(50,50,50);
   sky.render();
 
+  //fountain base
+  var fbase = new Cube([0.0,1.0,0.0,1.0]);
+  fbase.textureNum = 7;
+  fbase.matrix.translate(0, -1.5, 0.0);
+  fbase.matrix.translate(-1, 0, 1.25);
+  fbase.matrix.scale(1.99, 0.05, 1.99);
+  fbase.renderfast();
+
+  //fountain front base
+  for (x = -1; x < 1; x += 0.25) {
+    var ffbase = new Cube([0.0,1.0,0.0,1.0]);
+    ffbase.textureNum = 7;
+    ffbase.matrix.translate(0, -1.5, 0.0);
+    ffbase.matrix.translate(x, 0, -0.5);
+    ffbase.matrix.scale(0.25, 0.25, 0.25);
+    ffbase.renderfast();
+  }
+
+  //fountain back base
+  for (x = -1; x < 1; x += 0.25) {
+    var ffbase = new Cube([0.0,1.0,0.0,1.0]);
+    ffbase.textureNum = 7;
+    ffbase.matrix.translate(0, -1.5, 0.0);
+    ffbase.matrix.translate(x, 0, 1.25);
+    ffbase.matrix.scale(0.25, 0.25, 0.25);
+    ffbase.renderfast();
+  }
+
+  //fountain right side base
+  for (z = -0.25; z < 1.25; z += 0.25) {
+    var ffbase = new Cube([0.0,1.0,0.0,1.0]);
+    ffbase.textureNum = 7;
+    ffbase.matrix.translate(0, -1.5, 0.0);
+    ffbase.matrix.translate(-1, 0, z);
+    ffbase.matrix.scale(0.25, 0.25, 0.25);
+    ffbase.renderfast();
+  }
+
+  //fountain left side base
+  for (z = -0.25; z < 1.25; z += 0.25) {
+    var ffbase = new Cube([0.0,1.0,0.0,1.0]);
+    ffbase.textureNum = 7;
+    ffbase.matrix.translate(0, -1.5, 0.0);
+    ffbase.matrix.translate(0.75, 0, z);
+    ffbase.matrix.scale(0.25, 0.25, 0.25);
+    ffbase.renderfast();
+  }
+
+  //fountain column
+  var col = new Cube([0.0,1.0,0.0,1.0]);
+  col.textureNum = 7;
+  col.matrix.translate(-0.25, -1.5, 0.5);
+  //col.matrix.translate(0.75, 0, z);
+  col.matrix.scale(0.5, 0.75, 0.5);
+  col.renderfast();
+
+  //water
+  var water = new Cube([0.0,0.0,0.7,0.7]);
+  water.textureNum = -2;
+  water.matrix.translate(0, -1.5, 0.0);
+  water.matrix.translate(-1, 0, 1.25);
+  water.matrix.scale(1.79, 0.15, 1.79);
+  water.renderfast();
   
   var octbody = new Octagon3d([1.0,0.0,1.0,1.0]);
   octbody.matrix.translate(-0.2,-0.75,-0.25);

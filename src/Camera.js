@@ -11,12 +11,12 @@ class Camera {
 
         this.eye = new Vector3([0,0,-3]);
         this.eye.elements[0] = 0.25;
-        this.eye.elements[1] = 0;
+        this.eye.elements[1] = -1;
         this.eye.elements[2] = -4.25;
 
         this.at = new Vector3([0,0,-1]);
         this.at.elements[0] = 0.25;
-        this.at.elements[1] = 0;
+        this.at.elements[1] = -1;
         this.at.elements[2] = -1;
 
         this.up = new Vector3([0,1,0]);
