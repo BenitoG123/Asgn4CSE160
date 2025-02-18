@@ -5,7 +5,7 @@ class Camera {
         this.y = 0;
         this.xAngle = 5;
         this.speed = 0.05;
-        this.theta = 0;
+        this.theta = Math.PI/2;
         //this.newx = 0;
         //this.newz = 0;
 
@@ -282,13 +282,25 @@ class Camera {
 
         var index_x = (x+7.75)*2;
         var index_z = (z+8.25)*2;
+        console.log(index_x, index_z);
 
-        if ((degrees >= 45) && (degrees <= 135)) {
+        index_x = Math.round(index_x);
+        index_z = Math.round(index_z);
+
+        console.log(index_x, index_z);
+
+        if ((degrees >= 45) && (degrees <= 135)) { //fornt
             //increase z for forward
-            index_z += 1;
-        } else if ((degrees >= 45) && (degrees <= 135)) {
-            //
+            index_z += 2;
+        } else if ((degrees > 135) && (degrees < 225)) { //left
+            index_x += 2;
+        } else if ((degrees >= 225) && (degrees <= 315)) { //back
+            index_z -= 2;
+        } else if (((degrees > 315) && (degrees < 360)) | ((degrees > 0) && (degrees < 45))) { //right
+            index_x -= 2;
         }
+    
+        console.log(index_x, index_z);
 
         //bind to 0-31
         if (index_x > 31) {
@@ -315,6 +327,20 @@ class Camera {
 
         var index_x = (x+7.75)*2;
         var index_z = (z+8.25)*2;
+
+        //bind to 0-31
+        if (index_x > 31) {
+            index_x = 31;
+        }
+        if (index_x < 0) {
+            index_x = 0;
+        }
+        if (index_z > 31) {
+            index_z = 31;
+        }
+        if (index_z < 0) {
+            index_z = 0;
+        }
 
         if (g_map[index_x][index_z] > 0) {
             g_map[index_x][index_z] -= 1;
