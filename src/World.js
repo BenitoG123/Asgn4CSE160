@@ -173,6 +173,48 @@ function connectVariablesToGLSL(){
       return;
     }
 
+    u_Sampler2 = gl.getUniformLocation(gl.program, 'u_Sampler2');
+    if (!u_Sampler2) {
+      console.log('Failed to get the storage location of u_Sampler2');
+      return;
+    }
+
+    u_Sampler3 = gl.getUniformLocation(gl.program, 'u_Sampler3');
+    if (!u_Sampler3) {
+      console.log('Failed to get the storage location of u_Sampler3');
+      return;
+    }
+
+    u_Sampler4 = gl.getUniformLocation(gl.program, 'u_Sampler4');
+    if (!u_Sampler4) {
+      console.log('Failed to get the storage location of u_Sampler4');
+      return;
+    }
+
+    u_Sampler5 = gl.getUniformLocation(gl.program, 'u_Sampler5');
+    if (!u_Sampler5) {
+      console.log('Failed to get the storage location of u_Sampler5');
+      return;
+    }
+
+    u_Sampler6 = gl.getUniformLocation(gl.program, 'u_Sampler6');
+    if (!u_Sampler6) {
+      console.log('Failed to get the storage location of u_Sampler6');
+      return;
+    }
+
+    u_Sampler7 = gl.getUniformLocation(gl.program, 'u_Sampler7');
+    if (!u_Sampler7) {
+      console.log('Failed to get the storage location of u_Sampler7');
+      return;
+    }
+
+    u_Sampler8 = gl.getUniformLocation(gl.program, 'u_Sampler8');
+    if (!u_Sampler8) {
+      console.log('Failed to get the storage location of u_Sampler8');
+      return;
+    }
+
     u_whichTexture = gl.getUniformLocation(gl.program, 'u_whichTexture');
     if (!u_whichTexture) {
       console.log('Failed to get the storage location of u_whichTexture');
@@ -870,7 +912,7 @@ function renderAllShapes() {
   
   var octbody = new Octagon3d([1.0,0.0,1.0,1.0]);
   octbody.matrix.translate(-0.2,-0.75,-0.25);
-  octbody.textureNum = 1;
+  octbody.textureNum = 7;
   octbody.render();
   
   

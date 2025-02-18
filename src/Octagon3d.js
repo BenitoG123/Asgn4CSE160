@@ -8,7 +8,7 @@ class Octagon3d{
       //this.size = 5.0;
       //this.segments = segments;
       //this.alpha = 0.4;
-      this.textureNum = 7;
+      this.textureNum = 0;
       this.matrix = new Matrix4();
       this.buffer = null;
       this.vertices = null;
