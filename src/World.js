@@ -1469,10 +1469,22 @@ function click(ev) {
   console.log(delta_x, delta_y);
 
   //console.log("click on ", x, y);
-  var mousesense = 7;
 
-  g_globalXAngle += delta_x*mousesense;
-  g_globalYAngle += delta_y*mousesense;
+  g_camera.xAngle = 1;
+
+  if (delta_x <=0) {
+    g_camera.rotateLeft();
+  } else {
+    g_camera.rotateRight();
+  }
+
+
+  g_camera.xAngle = 5;
+
+  //var mousesense = 7;
+
+  //g_globalXAngle += delta_x*mousesense;
+  //g_globalYAngle += delta_y*mousesense;
   //console.log("global angle values", g_globalXAngle, g_globalYAngle);
   //console.log(typeof(g_globalXAngle))
 
