@@ -163,7 +163,7 @@ class Camera {
         this.theta = Math.atan(z_rad/x_rad);
         //console.log(this.theta);
 
-        this.theta -= (5 * Math.PI/180); //add 5 degrees in radians
+        this.theta -= (this.xAngle * Math.PI/180); //add 5 degrees in radians
         //console.log("theta", this.theta);
 
         var newx = r * Math.cos(this.theta);
@@ -194,8 +194,8 @@ class Camera {
 
         var r = Math.sqrt((at_copy.elements[0]*at_copy.elements[0]) + (at_copy.elements[2]*at_copy.elements[2]))
 
-        var x_rad = at_copy.elements[0]*Math.PI/180;
-        var z_rad = at_copy.elements[2]*Math.PI/180;
+        //var x_rad = at_copy.elements[0]; //*Math.PI/180
+        //var z_rad = at_copy.elements[2]; //*Math.PI/180
 
         console.log(this.theta);
         if (this.theta > Math.PI/2){
@@ -204,11 +204,11 @@ class Camera {
 
         }
         
-        this.theta = Math.atan(z_rad/x_rad);
+        this.theta = Math.atan(at_copy.elements[2]/at_copy.elements[0]);
         
         console.log("after atan", this.theta);
 
-        this.theta += (5 * Math.PI/180); //add 5 degrees in radians
+        this.theta += (this.xAngle * Math.PI/180); //add 5 degrees in radians
         //console.log("theta", this.theta);
 
         var newx = r * Math.cos(this.theta);
@@ -227,14 +227,51 @@ class Camera {
     }
 
     placeblock(){
+
+
+        //edge of map top left 7.75x, 7.25z [31][31]
+        //top right -7.75x, 7.25z [0][31]
+        //bottom left 7.75x -8.25z [31][0]
+        //bottom right -7.75x -8.25z [0][0]
+
+        //map on screen
+        //[31][31]    [0][31]
+        //
+        //         ^
+        //         |
+        //        you
+        //
+        //[31][0]     [0][0]
+
+        //take (eye.x + 7.75)*2 = index for x
+        //take (eye.z + 8.25)*2 = index for z
+
         var at_copy = new Vector3(this.at.elements);
         at_copy.sub(this.eye);
         //console.log("at_copy.elements right", at_copy.elements);
         at_copy.normalize();
+
+        var x = this.eye.elements[0];
+        var z = this.eye.elements[2];
+
+        var index_x = (x+7.75)*2;
+        var index_z = (z+8.25)*2;
+
+        g_map[index_x][index_z] += 1;
         
     }
 
     deleteblock(){
+
+        var x = this.eye.elements[0];
+        var z = this.eye.elements[2];
+
+        var index_x = (x+7.75)*2;
+        var index_z = (z+8.25)*2;
+
+        if (g_map[index_x][index_z] > 0) {
+            g_map[index_x][index_z] -= 1;
+        }
 
     }
     
