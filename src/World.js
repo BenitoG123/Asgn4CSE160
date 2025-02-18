@@ -831,7 +831,7 @@ function drawMap() {
           block.matrix.scale(0.5,0.5,0.5);
           block.matrix.translate(x-16, loop+1, y-16);
           
-          block.render();
+          block.renderfast();
         }
       }
     }
@@ -919,7 +919,7 @@ function renderAllShapes() {
   var neck = new Cube([0.9,0.0,0.9,1.0]);
   neck.matrix.translate(-0.05,-0.4,0.30);
   neck.matrix.scale(0.1,0.3,0.1);
-  octbody.textureNum = 7;
+  neck.textureNum = 7;
   neck.render();
 
   var head = new Cube([0.9,0.0,0.9,1.0]);
@@ -931,28 +931,31 @@ function renderAllShapes() {
   var leftEye = new Cube([1.0,1.0,1.0,1.0]);
   leftEye.matrix.translate(-0.15,0.07,0.05);
   leftEye.matrix.scale(0.1,0.1,0.1);
-  octbody.textureNum = 7;
+  leftEye.textureNum = 7;
   leftEye.render();
 
   var leftPuple = new Cube([0.0,0.0,0.0,1.0]);
   leftPuple.matrix.translate(-0.1,0.11,0.04);
   leftPuple.matrix.scale(0.02,0.02,0.1);
+  leftPuple.textureNum = 7;
   leftPuple.render();
 
   var rightEye = new Cube([1.0,1.0,1.0,1.0]);
   rightEye.matrix.translate(0.05,0.07,0.05);
   rightEye.matrix.scale(0.1,0.1,0.1);
-  octbody.textureNum = 7;
+  rightEye.textureNum = 7;
   rightEye.render();
 
   var rightPuple = new Cube([0.0,0.0,0.0,1.0]);
   rightPuple.matrix.translate(0.1,0.11,0.04);
   rightPuple.matrix.scale(0.02,0.02,0.1);
+  rightPuple.textureNum = 7;
   rightPuple.render();
 
   var mouth = new Cube([0.1,0.1,0.1,1.0]);
   mouth.matrix.translate(-0.05,-0.1,0.10);
   mouth.matrix.scale(0.1*g_msize,0.1*g_msize,0.11);
+  mouth.textureNum = 7;
   mouth.render();
 
 
@@ -1010,6 +1013,7 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.textureNum = 7;
   base.render();
 
   //draw a left arm
@@ -1022,7 +1026,8 @@ function renderAllShapes() {
 
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
-  longArm.matrix.translate(-0.5,0,0)
+  longArm.matrix.translate(-0.5,0,0);
+  longArm.textureNum = 7;
   longArm.render();
 
   //draw a box
@@ -1035,6 +1040,7 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
+  short.textureNum = 7;
   short.render();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
@@ -1047,6 +1053,7 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.textureNum = 7;
   tip.render();
 
 
@@ -1059,6 +1066,7 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.textureNum = 7;
   base.render();
 
   //draw a left arm
@@ -1071,7 +1079,8 @@ function renderAllShapes() {
 
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
-  longArm.matrix.translate(-0.5,0,0)
+  longArm.matrix.translate(-0.5,0,0);
+  longArm.textureNum = 7;
   longArm.render();
 
   //draw a box
@@ -1084,6 +1093,7 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
+  short.textureNum = 7;
   short.render();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
@@ -1096,6 +1106,7 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.textureNum = 7;
   tip.render();
 
   //leg 3
@@ -1107,6 +1118,7 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.textureNum = 7;
   base.render();
 
   //draw a left arm
@@ -1119,7 +1131,8 @@ function renderAllShapes() {
 
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
-  longArm.matrix.translate(-0.5,0,0)
+  longArm.matrix.translate(-0.5,0,0);
+  longArm.textureNum = 7;
   longArm.render();
 
   //draw a box
@@ -1132,6 +1145,7 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
+  short.textureNum = 7;
   short.render();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
@@ -1144,6 +1158,7 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.textureNum = 7;
   tip.render();
 
   //leg 4
@@ -1155,6 +1170,7 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.textureNum = 7;
   base.render();
 
   //draw a left arm
@@ -1167,7 +1183,8 @@ function renderAllShapes() {
 
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
-  longArm.matrix.translate(-0.5,0,0)
+  longArm.matrix.translate(-0.5,0,0);
+  longArm.textureNum = 7;
   longArm.render();
 
   //draw a box
@@ -1180,6 +1197,7 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
+  short.textureNum = 7;
   short.render();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
@@ -1192,6 +1210,7 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.textureNum = 7;
   tip.render();
 
   //leg5
@@ -1203,6 +1222,7 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.textureNum = 7;
   base.render();
 
   //draw a left arm
@@ -1215,7 +1235,8 @@ function renderAllShapes() {
 
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
-  longArm.matrix.translate(-0.5,0,0)
+  longArm.matrix.translate(-0.5,0,0);
+  longArm.textureNum = 7;
   longArm.render();
 
   //draw a box
@@ -1228,6 +1249,7 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
+  short.textureNum = 7;
   short.render();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
@@ -1240,6 +1262,7 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.textureNum = 7;
   tip.render();
 
   //leg6
@@ -1251,6 +1274,7 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.textureNum = 7;
   base.render();
 
   //draw a left arm
@@ -1263,7 +1287,8 @@ function renderAllShapes() {
 
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
-  longArm.matrix.translate(-0.5,0,0)
+  longArm.matrix.translate(-0.5,0,0);
+  longArm.textureNum = 7;
   longArm.render();
 
   //draw a box
@@ -1276,6 +1301,7 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
+  short.textureNum = 7;
   short.render();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
@@ -1288,6 +1314,7 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.textureNum = 7;
   tip.render();
 
   //leg7
@@ -1299,6 +1326,7 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.textureNum = 7;
   base.render();
 
   //draw a left arm
@@ -1311,7 +1339,8 @@ function renderAllShapes() {
 
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
-  longArm.matrix.translate(-0.5,0,0)
+  longArm.matrix.translate(-0.5,0,0);
+  longArm.textureNum = 7;
   longArm.render();
 
   //draw a box
@@ -1324,6 +1353,7 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
+  short.textureNum = 7;
   short.render();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
@@ -1336,6 +1366,7 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.textureNum = 7;
   tip.render();
 
   //leg8
@@ -1347,6 +1378,7 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
+  base.textureNum = 7;
   base.render();
 
   //draw a left arm
@@ -1359,7 +1391,8 @@ function renderAllShapes() {
 
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
-  longArm.matrix.translate(-0.5,0,0)
+  longArm.matrix.translate(-0.5,0,0);
+  longArm.textureNum = 7;
   longArm.render();
 
   //draw a box
@@ -1372,6 +1405,7 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
+  short.textureNum = 7;
   short.render();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
@@ -1384,6 +1418,7 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
+  tip.textureNum = 7;
   tip.render();
   
 

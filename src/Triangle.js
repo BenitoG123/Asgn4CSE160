@@ -148,7 +148,7 @@ class Triangle {
 
   drawTriangle3DUV() {
 
-    var n = 3; // The number of vertices
+    var n = this.vertices.length/3; // The number of vertices
 
     /*if (buffer === null | bufferUV === null) {
       this.initTriangle3DUV();
