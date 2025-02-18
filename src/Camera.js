@@ -164,6 +164,12 @@ class Camera {
         //console.log(this.theta);
 
         this.theta -= (this.xAngle * Math.PI/180); //add 5 degrees in radians
+        console.log(this.theta);
+        if (this.theta < -Math.PI/2){
+            console.log("bigger than pi/2");
+            this.theta = -this.theta;//-(Math.PI)/2;
+
+        }
         //console.log("theta", this.theta);
 
         var newx = r * Math.cos(this.theta);
@@ -176,12 +182,6 @@ class Camera {
         eye_copy.add(at_copy);
         this.at.set(eye_copy);
         console.log(this.at.elements);
-        
-        /*if (this.theta > Math.PI/2){
-            console.log("bigger than pi/2");
-            this.theta = this.theta-(Math.PI/2);
-
-        }*/
 
     }
 
@@ -197,18 +197,20 @@ class Camera {
         //var x_rad = at_copy.elements[0]; //*Math.PI/180
         //var z_rad = at_copy.elements[2]; //*Math.PI/180
 
-        console.log(this.theta);
-        if (this.theta > Math.PI/2){
-            console.log("bigger than pi/2");
-            this.theta = this.theta-(Math.PI/2);
-
-        }
+        
         
         this.theta = Math.atan(at_copy.elements[2]/at_copy.elements[0]);
         
         console.log("after atan", this.theta);
 
         this.theta += (this.xAngle * Math.PI/180); //add 5 degrees in radians
+
+        console.log(this.theta);
+        if (this.theta > Math.PI/2){
+            console.log("bigger than pi/2");
+            this.theta = -this.theta;//3*(Math.PI)/2;
+
+        }
         //console.log("theta", this.theta);
 
         var newx = r * Math.cos(this.theta);
@@ -250,6 +252,12 @@ class Camera {
         at_copy.sub(this.eye);
         //console.log("at_copy.elements right", at_copy.elements);
         at_copy.normalize();
+
+        var degrees = this.theta*180/Math.PI
+
+        if (degrees) {
+            //
+        }
 
         var x = this.eye.elements[0];
         var z = this.eye.elements[2];
