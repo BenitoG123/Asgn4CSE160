@@ -155,21 +155,31 @@ class Camera {
 
         var r = Math.sqrt((at_copy.elements[0]*at_copy.elements[0]) + (at_copy.elements[2]*at_copy.elements[2]))
 
-        var x_rad = at_copy.elements[0]*Math.PI/180;
-        var z_rad = at_copy.elements[2]*Math.PI/180;
+        var x = at_copy.elements[0];//*Math.PI/180;
+        var z = at_copy.elements[2];//*Math.PI/180;
 
         console.log(this.theta);
+
+        if (x > 0) { 
+            this.theta = Math.atan(z / x); 
+        }
+        else if (x < 0 && z >= 0) { 
+            this.theta = Math.atan(z / x) + Math.PI; 
+        } 
+        else if (x < 0 && z < 0) { 
+            this.theta = Math.atan(z / x) - Math.PI;
+        }
         
-        this.theta = Math.atan(z_rad/x_rad);
+        //this.theta = Math.atan(z_rad/x_rad);
         //console.log(this.theta);
 
         this.theta -= (this.xAngle * Math.PI/180); //add 5 degrees in radians
         console.log(this.theta);
-        if (this.theta < -Math.PI/2){
+        /*if (this.theta < -Math.PI/2){
             console.log("bigger than pi/2");
             this.theta = -this.theta;//-(Math.PI)/2;
 
-        }
+        }*/
         //console.log("theta", this.theta);
 
         var newx = r * Math.cos(this.theta);
@@ -186,6 +196,7 @@ class Camera {
     }
 
     rotateRight() {
+        //debugger
         var at_copy = new Vector3(this.at.elements);
         var eye_copy = new Vector3(this.eye.elements);
 
@@ -194,23 +205,34 @@ class Camera {
 
         var r = Math.sqrt((at_copy.elements[0]*at_copy.elements[0]) + (at_copy.elements[2]*at_copy.elements[2]))
 
-        //var x_rad = at_copy.elements[0]; //*Math.PI/180
-        //var z_rad = at_copy.elements[2]; //*Math.PI/180
+        var x = at_copy.elements[0]; //*Math.PI/180
+        var z = at_copy.elements[2]; //*Math.PI/180
 
         
-        
-        this.theta = Math.atan(at_copy.elements[2]/at_copy.elements[0]);
+        console.log(at_copy.elements);
+
+        if (x > 0) { 
+            this.theta = Math.atan(z / x); 
+        }
+        else if (x < 0 && z >= 0) { 
+            this.theta = Math.atan(z / x) + Math.PI; 
+        } 
+        else if (x < 0 && z < 0) { 
+            this.theta = Math.atan(z / x) - Math.PI;
+        }
+
+        //this.theta = Math.atan(at_copy.elements[2]/at_copy.elements[0]);
         
         console.log("after atan", this.theta);
 
         this.theta += (this.xAngle * Math.PI/180); //add 5 degrees in radians
 
         console.log(this.theta);
-        if (this.theta > Math.PI/2){
+        /*if (this.theta > Math.PI/2){
             console.log("bigger than pi/2");
             this.theta = -this.theta;//3*(Math.PI)/2;
 
-        }
+        }*/
         //console.log("theta", this.theta);
 
         var newx = r * Math.cos(this.theta);
@@ -255,15 +277,32 @@ class Camera {
 
         var degrees = this.theta*180/Math.PI
 
-        if (degrees) {
-            //
-        }
-
         var x = this.eye.elements[0];
         var z = this.eye.elements[2];
 
         var index_x = (x+7.75)*2;
         var index_z = (z+8.25)*2;
+
+        if ((degrees >= 45) && (degrees <= 135)) {
+            //increase z for forward
+            index_z += 1;
+        } else if ((degrees >= 45) && (degrees <= 135)) {
+            //
+        }
+
+        //bind to 0-31
+        if (index_x > 31) {
+            index_x = 31;
+        }
+        if (index_x < 0) {
+            index_x = 0;
+        }
+        if (index_z > 31) {
+            index_z = 31;
+        }
+        if (index_z < 0) {
+            index_z = 0;
+        }
 
         g_map[index_x][index_z] += 1;
         
