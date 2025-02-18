@@ -282,22 +282,27 @@ class Camera {
 
         var index_x = (x+7.75)*2;
         var index_z = (z+8.25)*2;
-        console.log(index_x, index_z);
+        //console.log(index_x, index_z);
 
         index_x = Math.round(index_x);
         index_z = Math.round(index_z);
+        console.log("index numbers");
 
         console.log(index_x, index_z);
 
         if ((degrees >= 45) && (degrees <= 135)) { //fornt
             //increase z for forward
             index_z += 2;
-        } else if ((degrees > 135) && (degrees < 225)) { //left
-            index_x += 2;
-        } else if ((degrees >= 225) && (degrees <= 315)) { //back
-            index_z -= 2;
-        } else if (((degrees > 315) && (degrees < 360)) | ((degrees > 0) && (degrees < 45))) { //right
+            console.log("front");
+        } else if (((degrees > 135) && (degrees <= 180)) | ((degrees > -185) && (degrees < -135))) { //left
             index_x -= 2;
+            console.log("right");
+        } else if ((degrees >= -135) && (degrees <= -45)) { //back
+            console.log("back");
+            index_z -= 2;
+        } else if (((degrees > -45) && (degrees <= 0)) | ((degrees > 0) && (degrees < 45))) { //right
+            index_x += 2;
+            console.log("left");
         }
     
         console.log(index_x, index_z);
@@ -316,17 +321,49 @@ class Camera {
             index_z = 0;
         }
 
+        console.log(index_x, index_z);
         g_map[index_x][index_z] += 1;
         
     }
 
     deleteblock(){
 
+        var at_copy = new Vector3(this.at.elements);
+        at_copy.sub(this.eye);
+        //console.log("at_copy.elements right", at_copy.elements);
+        at_copy.normalize();
+
+        var degrees = this.theta*180/Math.PI
+
         var x = this.eye.elements[0];
         var z = this.eye.elements[2];
 
         var index_x = (x+7.75)*2;
         var index_z = (z+8.25)*2;
+        //console.log(index_x, index_z);
+
+        index_x = Math.round(index_x);
+        index_z = Math.round(index_z);
+        console.log("index numbers");
+
+        console.log(index_x, index_z);
+
+        if ((degrees >= 45) && (degrees <= 135)) { //fornt
+            //increase z for forward
+            index_z += 2;
+            console.log("front");
+        } else if (((degrees > 135) && (degrees <= 180)) | ((degrees > -185) && (degrees < -135))) { //left
+            index_x -= 2;
+            console.log("right");
+        } else if ((degrees >= -135) && (degrees <= -45)) { //back
+            console.log("back");
+            index_z -= 2;
+        } else if (((degrees > -45) && (degrees <= 0)) | ((degrees > 0) && (degrees < 45))) { //right
+            index_x += 2;
+            console.log("left");
+        }
+    
+        console.log(index_x, index_z);
 
         //bind to 0-31
         if (index_x > 31) {
@@ -341,6 +378,8 @@ class Camera {
         if (index_z < 0) {
             index_z = 0;
         }
+
+        console.log(index_x, index_z);
 
         if (g_map[index_x][index_z] > 0) {
             g_map[index_x][index_z] -= 1;
