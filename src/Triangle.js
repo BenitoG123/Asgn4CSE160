@@ -13,8 +13,10 @@ class Triangle {
     this.alpha = 1.0;
     this.buffer = null;
     this.bufferUV = null;
+    this.bufferNormal = null;
     this.vertices = vertices;
     this.uv = [1, 0, 0, 1, 1, 1]; //temp variable
+    this.normal = [1,0,0, 1,0,0, 1,0,0]; //temp
   }
 
   initTriangle3DUV() {
@@ -209,6 +211,139 @@ class Triangle {
 
     //draw the triangle
     gl.drawArrays(gl.TRIANGLES, 0, n);
+
+    // console.log(this.uv)
+
+  }
+
+  initTriangle3DUVNormal() {
+
+    // Create a buffer object for vertices
+    if (buffer === null) {
+      buffer = gl.createBuffer();
+      if (!buffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
+      }
+    }
+
+    // Bind the buffer object to target
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+    // Assign the buffer object to a_Position variable
+    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
+
+    // Enable the assignment to a_Position variable
+    gl.enableVertexAttribArray(a_Position);
+
+    //------
+    // create a buffer object for UV
+    // Create a buffer object
+    if (bufferUV === null) {
+      bufferUV = gl.createBuffer();
+      if (!bufferUV) {
+        console.log('Failed to create the bufferUV object');
+        return -1;
+      }
+    }
+
+    // Bind the buffer object to target
+    gl.bindBuffer(gl.ARRAY_BUFFER, bufferUV);
+
+    // Assign the buffer object to a_Position variable
+    gl.vertexAttribPointer(a_UV, 2, gl.FLOAT, false, 0, 0);
+
+    // Enable the assignment to a_Position variable
+    gl.enableVertexAttribArray(a_UV);
+  }
+
+  drawTriangle3DUVNormal() {
+
+    var n = this.vertices.length/3; // The number of vertices
+
+    /*if (buffer === null | bufferUV === null) {
+      this.initTriangle3DUVNormal();
+    }*/
+
+    // Create a buffer object for vertices
+    if (this.buffer === null) {
+      this.buffer = gl.createBuffer();
+      if (!this.buffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
+      }
+    }
+
+    // Bind the buffer object to target
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+
+    // Write date into the buffer object
+    gl.bufferData(gl.ARRAY_BUFFER,
+      new Float32Array(this.vertices),
+      gl.DYNAMIC_DRAW);
+
+    // Assign the buffer object to a_Position variable
+    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
+
+    // Enable the assignment to a_Position variable
+    gl.enableVertexAttribArray(a_Position);
+
+    //------
+    // create a buffer object for UV
+    // Create a buffer object
+    if (this.bufferUV === null) {
+      this.bufferUV = gl.createBuffer();
+      if (!this.bufferUV) {
+        console.log('Failed to create the bufferUV object');
+        return -1;
+      }
+    }
+
+    // Bind the buffer object to target
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.bufferUV);
+
+    // Write date into the buffer object
+    gl.bufferData(gl.ARRAY_BUFFER,
+      new Float32Array(this.uv),
+      gl.DYNAMIC_DRAW);
+
+    // Assign the buffer object to a_Position variable
+    gl.vertexAttribPointer(a_UV, 2, gl.FLOAT, false, 0, 0);
+
+    // Enable the assignment to a_Position variable
+    gl.enableVertexAttribArray(a_UV);
+
+
+    //gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+
+    if (this.bufferNormal === null) {
+      this.bufferNormal = gl.createBuffer();
+      if (!this.bufferNormal) {
+        console.log('Failed to create the buffer object');
+        return -1;
+      }
+    }
+
+    // Bind the buffer object to target
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.bufferNormal);
+
+    // Write date into the buffer object
+    gl.bufferData(gl.ARRAY_BUFFER,
+      new Float32Array(this.normal),
+      gl.DYNAMIC_DRAW);
+
+    // Assign the buffer object to a_Position variable
+    gl.vertexAttribPointer(a_Normal, 3, gl.FLOAT, false, 0, 0);
+
+    // Enable the assignment to a_Position variable
+    gl.enableVertexAttribArray(a_Normal);
+
+
+    //draw the triangle
+    gl.drawArrays(gl.TRIANGLES, 0, n);
+
+    //this.buffer = null;
 
     // console.log(this.uv)
 

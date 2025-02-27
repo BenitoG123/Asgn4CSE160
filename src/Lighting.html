@@ -28,8 +28,20 @@
     <p></p>
 
     <button type="button" hidden="hidden" id="imgButton"></button>
+    <p>Light</p>
+
+
+    <button type="button" id="lightButtonOn"> On</button>
+    <button type="button" id="lightButtonOff"> Off</button>
     <p></p>
 
+    <button type="button" id="lightButtonMove">Light Move</button>
+    <button type="button" id="lightButtonStop">Light Stop</button>
+    <p></p>
+
+    <button type="button" id="normalButtonOn">Normal On</button>
+    <button type="button" id="normalButtonOff">Normal Off</button>
+    <p></p>
 
     <input type="range" hidden="hidden" min="0" max="100" value="100" class="slider" id="redSlide">
     <p></p>
@@ -38,6 +50,13 @@
     <p></p>
 
     <input type="range" hidden="hidden" min="0" max="100" value="0" class="slider" id="blueSlide">
+    <p></p>
+
+    Light X<input type="range"  min="-250" max="250" value="0" class="slider" id="lightSlideX">
+    Light Y<input type="range"  min="-250" max="250" value="100" class="slider" id="lightSlideY">
+    Light Z<input type="range"  min="-250" max="250" value="-200" class="slider" id="lightSlideZ">
+    <p></p>
+    
     <p>You can pose the statue with these sliders</p>
 
     Top Arm <input type="range" min="-45" max="45" value="-45" class="slider" id="finalSlide">
@@ -110,11 +129,12 @@
     <script src="../lib/webgl-debug.js"></script>
     <script src="../lib/cuon-utils.js"></script>
     <script src="../lib/cuon-matrix-cse160.js"></script>
-    <script src="./World.js"></script>
+    <script src="./Lighting.js"></script>
     <script src="./Point.js"></script>
     <script src="./Circle.js"></script>
     <script src="./Triangle.js"></script>
     <script src="./Cube.js"></script>
+    <script src="./Sphere.js"></script>
     <script src="./Octagon3d.js"></script>
     <script src="Camera.js"></script>
     
