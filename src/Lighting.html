@@ -30,7 +30,6 @@
     <button type="button" hidden="hidden" id="imgButton"></button>
     <p>Light</p>
 
-
     <button type="button" id="lightButtonOn"> On</button>
     <button type="button" id="lightButtonOff"> Off</button>
     <p></p>
@@ -39,8 +38,9 @@
     <button type="button" id="lightButtonStop">Light Stop</button>
     <p></p>
 
-    <button type="button" id="normalButtonOn">Normal On</button>
-    <button type="button" id="normalButtonOff">Normal Off</button>
+    <p>Spotlight</p>
+    <button type="button" id="spotLightButtonOn"> On</button>
+    <button type="button" id="spotLightButtonOff"> Off</button>
     <p></p>
 
     <input type="range" hidden="hidden" min="0" max="100" value="100" class="slider" id="redSlide">
@@ -55,6 +55,24 @@
     Light X<input type="range"  min="-250" max="250" value="0" class="slider" id="lightSlideX">
     Light Y<input type="range"  min="-250" max="250" value="100" class="slider" id="lightSlideY">
     Light Z<input type="range"  min="-250" max="250" value="-200" class="slider" id="lightSlideZ">
+    <p></p>
+
+    Spotlight Eye X<input type="range"  min="-1000" max="1000" value="0" class="slider" id="spotLightEyeSlideX">
+    Spotlight Eye Y<input type="range"  min="-1000" max="1000" value="100" class="slider" id="spotLightEyeSlideY">
+    Spotlight Eye Z<input type="range"  min="-1000" max="1000" value="0" class="slider" id="spotLightEyeSlideZ">
+    <p></p>
+
+    Spotlight Direction X<input type="range"  min="-250" max="250" value="0" class="slider" id="spotLightAtSlideX">
+    Spotlight Direction Y<input type="range"  min="-250" max="250" value="-100" class="slider" id="spotLightAtSlideY">
+    Spotlight Direction Z<input type="range"  min="-250" max="250" value="0" class="slider" id="spotLightAtSlideZ">
+    <p></p>
+
+    Spotlight Fade<input type="range"  min="10" max="100" value="50" class="slider" id="fade">
+    Spotlight Angle<input type="range"  min="0" max="100" value="50" class="slider" id="cutoff">
+    <p></p>
+
+    <button type="button" id="normalButtonOn">Normal On</button>
+    <button type="button" id="normalButtonOff">Normal Off</button>
     <p></p>
     
     <p>You can pose the statue with these sliders</p>
@@ -90,6 +108,22 @@
     <p></p>
 
     <br>
+    <br>
+    <u>notes for grader:</u>
+    <p> It is not optimized, so it can lag but it should work otherwise.<br>
+    </p>
+
+    <p>Slider Directions:<br>
+      -Light is the specular + diffuse + ambient light.<br>
+      This can be turned on and off and moved around with the Light X,Y,Z sliders.<br>
+      -Spotlight is the spotlight.<br>
+      This can be moved around with Spotlight Eye X,Y,Z sliders. You can change where it is looking with the Spotlight Direction sliders<br>
+      Both the light and spot light positions are rendered as small cubes.<br>
+      -Spotlight Fade is how quickly the spotlight turns to black as it goes out from the center<br>
+      -Spotlight Angle is the max angle of light that can come from the spotlight<br>
+      note: the direction sliders isn't an "At" point, it is the vector direction<br>
+      note: I made it so the light and spotlight can't both be on, so to turn all the lights off you only need to turn off the one that is currently on.<br>
+    </p>
 
     <p>Controls:<br>
       - Walk around with WASD <br>
@@ -101,29 +135,16 @@
       - Choose block texture with number 1, 2, 3, or 4
     </p>
     <br>
+    <p>The story below is left over from BlockyWorld.</p>
     <p>Story:<br>
       This is a small island that fisherman like to stop by and dock. <br>
       It is said that a fisherman found the island while reeling in an octopus. <br>
       He would then have the best haul he ever had, and this island was deemed good luck. <br>
       Today there is a fountain with an octopus on it to wish for the island's luck for any fisherman passing by.<br>
     </p>
-    <br>
-    <u>notes for grader:</u>
-    <p>
-      The performance should be relatively fine, if there is lag, it is likely from a garbage dump and should go away.<br>
-      For the "Wow!" rubric point I allow you to change the 
-      texture of the blocks you place down as mentioned in the Controls.<br>
-      The place blck works by placeing a block in front of you on the ground, so you can place and delete blocks in the air, but the bottom block might be out of your view.<br>
-      
+    
       <br>
       
-      minor issues: <br>
-      - The Camera X angle and Camera Y angle are left over from blocky animal.<br> 
-          They still work but the place and delete block doesn't work with it.<br>
-      - The mouse movement works, but it does not go up and down, you can only look left and right. <br>
-      - If the mouse doesn't seem to be working, make sure the mouse is moving slightly becuase if the mouse comes to a full stop it can stop moving the camera. <br>
-      - I don't know why but when you press space (at least on my browser) it moves you to the bottom of the page, the space bar still works to make you fly up and you can use I instead. <br>
-    </p>
 
     <script src="../lib/webgl-utils.js"></script>
     <script src="../lib/webgl-debug.js"></script>

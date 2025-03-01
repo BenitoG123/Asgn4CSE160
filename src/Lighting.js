@@ -30,8 +30,13 @@ var FSHADER_SOURCE = `
   varying vec4 v_VertPos;
   uniform vec4 u_FragColor;
   uniform vec3 u_lightPos;
+  uniform vec3 u_spotLightEye;
+  uniform vec3 u_spotLightAt;
+  uniform bool u_spotLightOn;
   uniform vec3 u_cameraPos;
   uniform bool u_lightOn;
+  uniform float u_cutoff;
+  uniform float u_fade;
 
   uniform sampler2D u_Sampler0;
   uniform sampler2D u_Sampler1;
@@ -47,7 +52,7 @@ var FSHADER_SOURCE = `
   void main() {
 
     if (u_whichTexture == -3) {           //Use normal
-      gl_FragColor = vec4((v_Normal), 1.0);
+      gl_FragColor = vec4((v_Normal+1.0)/2.0, 1.0);
     } else if (u_whichTexture == -2) {           //Use color
       gl_FragColor = u_FragColor;
     } else if (u_whichTexture == -1) {    //Use UV debug color
@@ -115,13 +120,28 @@ var FSHADER_SOURCE = `
       gl_FragColor = vec4(diffuse + ambient, 1.0);
       }
     } 
-    //   else {
-    //  if (u_whichTexture >= 3) {
-    //     gl_FragColor = vec4(specular + diffuse + ambient, 1.0);
-    //   } else {
-    //   gl_FragColor = vec4(diffuse + ambient, 1.0);
-    //   }
-    // }
+
+    vec3 spotlightVector = u_spotLightEye - vec3(v_VertPos);
+    vec3 spotL = normalize(spotlightVector);
+    vec3 D = normalize(normalize(u_spotLightAt) - u_spotLightEye);
+
+    D = normalize(u_spotLightAt);//vec3(0.0, -1.0, 0.0);
+
+    //float cutoff = 0.5;
+    //float fade = 2.0;
+
+    float DDotnL = pow((max(dot(D,-spotL), 0.0)), u_fade);
+    float DDotL = pow((max(dot(D,spotL), 0.0)), u_fade);
+    
+    
+    if (u_spotLightOn) {
+      if (DDotnL > u_cutoff) {
+        vec3 fixed_color = (specular + diffuse + ambient) * DDotnL;
+        gl_FragColor = vec4(fixed_color, 1.0);
+      } else {
+        gl_FragColor = vec4(0.0,0.0,0.0,1.0);
+      }
+    }
 
 
   }`
@@ -153,6 +173,11 @@ var FSHADER_SOURCE = `
   let u_lightPos;
   let u_cameraPos;
   let u_lightOn;
+  let u_spotLightAt;
+  let u_spotLightEye;
+  let u_spotLightOn;
+  let u_fade;
+  let u_cutoff;
 
   let g_camera;
 
@@ -320,6 +345,36 @@ function connectVariablesToGLSL(){
       return;
     }
 
+    u_spotLightAt = gl.getUniformLocation(gl.program, 'u_spotLightAt');
+    if (!u_spotLightAt) {
+      console.log('Failed to get the storage location of u_spotLightAt');
+      return;
+    }
+
+    u_spotLightEye = gl.getUniformLocation(gl.program, 'u_spotLightEye');
+    if (!u_spotLightEye) {
+      console.log('Failed to get the storage location of u_spotLightEye');
+      return;
+    }
+
+    u_spotLightOn = gl.getUniformLocation(gl.program, 'u_spotLightOn');
+    if (!u_spotLightOn) {
+      console.log('Failed to get the storage location of u_spotLightOn');
+      return;
+    }
+
+    u_fade = gl.getUniformLocation(gl.program, 'u_fade');
+    if (!u_fade) {
+      console.log('Failed to get the storage location of u_fade');
+      return;
+    }
+
+    u_cutoff = gl.getUniformLocation(gl.program, 'u_cutoff');
+    if (!u_cutoff) {
+      console.log('Failed to get the storage location of u_cutoff');
+      return;
+    }
+
     //set an initial value for this matrix to identity
     var identityM = new Matrix4();
     
@@ -377,8 +432,14 @@ let g_normal = false;
 let g_lightAni = false;
 let g_lightOn = true;
 let g_lightPos = [0,1,-2];
-//let g_lightY = 100;
-//let g_lightZ = -200;
+
+let g_spotLightEye = [0,1,0];
+let g_spotLightAt = [0,-1,0];
+let g_spotLightOn = false;
+
+let g_fade = 5;
+let g_cutoff = 0.5;
+
 
 
 
@@ -392,7 +453,7 @@ function addActionsForHtmlUI(){
   document.getElementById('animationOnButton2').onclick = function() {g_animation2=true};
   document.getElementById('animationOffButton2').onclick = function() {g_animation2=false};
 
-  document.getElementById('lightButtonOn').onclick = function() {g_lightOn=true; } //console.log(u_lightOn); };
+  document.getElementById('lightButtonOn').onclick = function() {g_lightOn=true; g_spotLightOn=false;} //console.log(u_lightOn); };
   document.getElementById('lightButtonOff').onclick = function() {g_lightOn=false; } //console.log(u_lightOn);};
   
   document.getElementById('lightButtonMove').onclick = function() {g_lightAni=true};
@@ -400,6 +461,9 @@ function addActionsForHtmlUI(){
 
   document.getElementById('normalButtonOn').onclick = function() {g_normal=true};
   document.getElementById('normalButtonOff').onclick = function() {g_normal=false};
+
+  document.getElementById('spotLightButtonOn').onclick = function() {g_spotLightOn=true; g_lightOn=false;}
+  document.getElementById('spotLightButtonOff').onclick = function() {g_spotLightOn=false; }
 
   //Color Slider Events
   document.getElementById('redSlide').addEventListener('mouseup', function() { g_selectedColor[0] = this.value/100; });
@@ -415,9 +479,20 @@ function addActionsForHtmlUI(){
   document.getElementById('finalSlide').addEventListener('mousemove', function() { g_finalAngle = this.value; renderAllShapes(); });
   
 
-  document.getElementById('lightSlideX').addEventListener('mousemove', function() { g_lightPos[0] = this.value/100; renderAllShapes(); });
+  document.getElementById('lightSlideX').addEventListener('mousemove', function() { g_lightPos[0] = -this.value/100; renderAllShapes(); });
   document.getElementById('lightSlideY').addEventListener('mousemove', function() { g_lightPos[1] = this.value/100; renderAllShapes(); });
   document.getElementById('lightSlideZ').addEventListener('mousemove', function() { g_lightPos[2] = this.value/100; renderAllShapes(); });
+  
+  document.getElementById('spotLightEyeSlideX').addEventListener('mousemove', function() { g_spotLightEye[0] = -this.value/100; renderAllShapes(); });
+  document.getElementById('spotLightEyeSlideY').addEventListener('mousemove', function() { g_spotLightEye[1] = this.value/100; renderAllShapes(); });
+  document.getElementById('spotLightEyeSlideZ').addEventListener('mousemove', function() { g_spotLightEye[2] = this.value/100; renderAllShapes(); });
+  
+  document.getElementById('spotLightAtSlideX').addEventListener('mousemove', function() { g_spotLightAt[0] = -this.value/100; renderAllShapes(); });
+  document.getElementById('spotLightAtSlideY').addEventListener('mousemove', function() { g_spotLightAt[1] = this.value/100; renderAllShapes(); });
+  document.getElementById('spotLightAtSlideZ').addEventListener('mousemove', function() { g_spotLightAt[2] = this.value/100; renderAllShapes(); });
+  
+  document.getElementById('fade').addEventListener('mousemove', function() { g_fade = this.value/10; renderAllShapes(); });
+  document.getElementById('cutoff').addEventListener('mousemove', function() { g_cutoff = this.value/100; renderAllShapes(); });
   
   
   
@@ -923,9 +998,10 @@ function updateAnimationAngles() {
   }
 
   if (g_lightAni) {
-    var r = 3;
-    g_lightPos[0] = r * Math.cos(g_seconds);
-    g_lightPos[1] = r * Math.sin(g_seconds);
+    var r = 10;
+    var v = 10;
+    g_lightPos[0] = r * Math.cos((2*(Math.PI)/v)*g_seconds);
+    g_lightPos[1] = r * Math.sin((2*(Math.PI)/v)*g_seconds);
   }
 }
 
@@ -999,7 +1075,7 @@ function drawMap() {
           block.matrix.scale(0.5,0.5,0.5);
           block.matrix.translate(x-16, loop+1, y-16);
           
-          block.render();
+          block.renderfast();
         }
       }
     }
@@ -1016,6 +1092,12 @@ function renderAllShapes() {
   //var texture = -3;
 
   //var xAngleRads = g_globalXAngle * Math.PI/180;
+
+  //console.log("spot light eye", g_spotLightEye);
+  //console.log("spot light at", g_spotLightAt);
+
+  //console.log("fade", g_fade);
+  //console.log("cutoff", g_cutoff);
 
   var projMat = g_camera.proj;
   projMat.setPerspective(60, canvas.width/canvas.height, 0.1, 1000); //(fov, aspect, near, far)
@@ -1060,23 +1142,59 @@ function renderAllShapes() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-
-  //Draw map
-  //drawMap();
+  gl.uniform3f(u_cameraPos, g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2]);
 
   //light
   gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1]-2, g_lightPos[2]);
 
-  gl.uniform3f(u_cameraPos, g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2]);
-
   gl.uniform1i(u_lightOn, g_lightOn);
 
+  //spotlight
+  gl.uniform3f(u_spotLightEye, g_spotLightEye[0], g_spotLightEye[1], g_spotLightEye[2]);
+
+  gl.uniform3f(u_spotLightAt, g_spotLightAt[0], g_spotLightAt[1], g_spotLightAt[2]);
+
+  gl.uniform1i(u_spotLightOn, g_spotLightOn);
+
+  gl.uniform1f(u_fade, g_fade);
+  gl.uniform1f(u_cutoff, g_cutoff);
+
+  //Draw map
+  drawMap();
 
   var light = new Cube([1,1,0,1]);
-  light.matrix.translate(g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+  if (g_spotLightOn) {
+    light.matrix.translate(g_spotLightEye[0], g_spotLightEye[1], g_spotLightEye[2]);
+  } else {
+    light.matrix.translate(g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+  }
   light.matrix.scale(-0.1,-0.1,-0.1);
-  light.textureNum = -2;
-  light.render();
+  if (g_normal) { 
+    light.textureNum = -3;
+  } else {
+    light.textureNum = -2;
+  }
+  light.renderfast();
+
+  var spotLight = new Cube ([1,1,1,1]);
+  spotLight.matrix.translate(g_spotLightEye[0], g_spotLightEye[1], g_spotLightEye[2]);
+  spotLight.matrix.scale(-0.1,-0.1,-0.1);
+  if (g_normal) { 
+    spotLight.textureNum = -3;
+  } else {
+    spotLight.textureNum = -2;
+  }
+  spotLight.renderfast();
+
+  // var spotLightAt = new Cube ([1,1,1,0]);
+  // spotLightAt.matrix.translate(g_spotLightAt[0], g_spotLightAt[1], g_spotLightAt[2]);
+  // spotLightAt.matrix.scale(-0.1,-0.1,-0.1);
+  // if (g_normal) { 
+  //   spotLightAt.textureNum = -3;
+  // } else {
+  //   spotLightAt.textureNum = -2;
+  // }
+  // spotLightAt.renderfast();
 
   var sphere = new Sphere([1.0,1.0,1.0,1.0]);
   if (g_normal) { 
@@ -1091,12 +1209,15 @@ function renderAllShapes() {
 
   //dock
   var floor = new Cube([0.0,1.0,0.0,1.0]);
-  floor.textureNum = 2;
-  
+  if (g_normal) { 
+    floor.textureNum = -3;
+  } else {
+    floor.textureNum = 2;
+  }
   floor.matrix.translate(0, -1.5, 0.0);
   floor.matrix.translate(-2.5, 0.01, 16);
   floor.matrix.scale(4, 0.02, 4);
-  floor.render();
+  floor.renderfast();
 
   //rail
   for (z = 12.5; z < 16.5; z += 0.5) {
@@ -1109,7 +1230,7 @@ function renderAllShapes() {
     rail.matrix.translate(0, -1.5, 0.0);
     rail.matrix.translate(-2.5, 0.01, z);
     rail.matrix.scale(0.5, 0.5, 0.5);
-    rail.render();
+    rail.renderfast();
   }
 
   //rail
@@ -1123,7 +1244,7 @@ function renderAllShapes() {
     rail.matrix.translate(0, -1.5, 0.0);
     rail.matrix.translate(1, 0.01, z);
     rail.matrix.scale(0.5, 0.5, 0.5);
-    rail.render();
+    rail.renderfast();
   }
 
 
@@ -1137,7 +1258,7 @@ function renderAllShapes() {
   floor.matrix.translate(0, -1.5, 0.0);
   floor.matrix.translate(-16, 0.01, 16);
   floor.matrix.scale(32, 0, 32);
-  floor.render();
+  floor.renderfast();
 
   //draw the sky
   var sky = new Cube([0.0, 0.0, 1.0, 1.0]);
@@ -1148,15 +1269,19 @@ function renderAllShapes() {
   }
   sky.matrix.translate(25, 15, -25);
   sky.matrix.scale(-50,-50,-50);
-  sky.render();
+  sky.renderfast();
 
   //fountain base
   var fbase = new Cube([0.0,1.0,0.0,1.0]);
-  fbase.textureNum = 7;
+  if (g_normal) { 
+    fbase.textureNum = -3;
+  } else {
+    fbase.textureNum = 7;
+  }
   fbase.matrix.translate(0, -1.5, 0.0);
   fbase.matrix.translate(-1, 0, 1.25);
   fbase.matrix.scale(1.99, 0.05, 1.99);
-  fbase.render();
+  fbase.renderfast();
 
   //fountain front base
   for (x = -1; x < 1; x += 0.25) {
@@ -1170,7 +1295,7 @@ function renderAllShapes() {
     ffbase.matrix.translate(0, -1.5, 0.0);
     ffbase.matrix.translate(x, 0, -0.5);
     ffbase.matrix.scale(0.25, 0.25, 0.25);
-    ffbase.render();
+    ffbase.renderfast();
   }
 
   //fountain back base
@@ -1184,52 +1309,73 @@ function renderAllShapes() {
     ffbase.matrix.translate(0, -1.5, 0.0);
     ffbase.matrix.translate(x, 0, 1.25);
     ffbase.matrix.scale(0.25, 0.25, 0.25);
-    ffbase.render();
+    ffbase.renderfast();
   }
 
   //fountain right side base
   for (z = -0.25; z < 1.25; z += 0.25) {
     var ffbase = new Cube([0.0,1.0,0.0,1.0]);
-    ffbase.textureNum = 7;
+    if (g_normal) { 
+      ffbase.textureNum = -3;
+    } else {
+      ffbase.textureNum = 7;
+    }
     ffbase.matrix.translate(0, -1.5, 0.0);
     ffbase.matrix.translate(-1, 0, z);
     ffbase.matrix.scale(0.25, 0.25, 0.25);
-    ffbase.render();
+    ffbase.renderfast();
   }
 
   //fountain left side base
   for (z = -0.25; z < 1.25; z += 0.25) {
     var ffbase = new Cube([0.0,1.0,0.0,1.0]);
-    ffbase.textureNum = 7;
+    if (g_normal) { 
+      ffbase.textureNum = -3;
+    } else {
+      ffbase.textureNum = 7;
+    }
     ffbase.matrix.translate(0, -1.5, 0.0);
     ffbase.matrix.translate(0.75, 0, z);
     ffbase.matrix.scale(0.25, 0.25, 0.25);
-    ffbase.render();
+    ffbase.renderfast();
   }
 
   //fountain column
   var col = new Cube([0.0,1.0,0.0,1.0]);
   col.textureNum = 7;
+  if (g_normal) { 
+    col.textureNum = -3;
+  } else {
+    col.textureNum = 7;
+  }
   col.matrix.translate(-0.25, -1.5, 0.5);
   //col.matrix.translate(0.75, 0, z);
   col.matrix.scale(0.5, 0.75, 0.5);
-  col.render();
+  col.renderfast();
 
   //water
   var water = new Cube([0.0,0.0,0.7,0.7]);
-  water.textureNum = -2;
+  if (g_normal) { 
+    water.textureNum = -3;
+  } else {
+    water.textureNum = -2;
+  }
   water.matrix.translate(0, -1.5, 0.0);
   water.matrix.translate(-1, 0, 1.25);
   water.matrix.scale(1.79, 0.15, 1.79);
-  water.render();
+  water.renderfast();
 
   //ocean
   var ocean = new Cube([0.0,0.0,0.9,1.0]);
-  ocean.textureNum = -2;
+  if (g_normal) { 
+    ocean.textureNum = -3;
+  } else {
+    ocean.textureNum = -2;
+  }
   ocean.matrix.translate(0, -1.5, 0.0);
   ocean.matrix.translate(-40, 0, 40);
   ocean.matrix.scale(80, 0, 80);
-  ocean.render();
+  ocean.renderfast();
 
 
 
@@ -1237,52 +1383,83 @@ function renderAllShapes() {
   
   var octbody = new Octagon3d([1.0,0.0,1.0,1.0]);
   octbody.matrix.translate(-0.2,-0.75,-0.25);
-  octbody.textureNum = 7;
+  if (g_normal) { 
+    octbody.textureNum = -3;
+  } else {
+    octbody.textureNum = 7;
+  }
   octbody.render();
   
   
   var neck = new Cube([0.9,0.0,0.9,1.0]);
   neck.matrix.translate(-0.05,-0.4,0.30);
   neck.matrix.scale(0.1,0.3,0.1);
-  neck.textureNum = 7;
-  neck.render();
+  if (g_normal) { 
+    neck.textureNum = -3;
+  } else {
+    neck.textureNum = 7;
+  }
+  neck.renderfast();
 
   var head = new Cube([0.9,0.0,0.9,1.0]);
   head.matrix.translate(-0.25,-0.20,0.5);
   head.matrix.scale(0.5,0.5,0.5);
-  head.textureNum = 7;
-  head.render();
+  if (g_normal) { 
+    head.textureNum = -3;
+  } else {
+    head.textureNum = 7;
+  }
+  head.renderfast();
 
   var leftEye = new Cube([1.0,1.0,1.0,1.0]);
   leftEye.matrix.translate(-0.15,0.07,0.05);
   leftEye.matrix.scale(0.1,0.1,0.1);
-  leftEye.textureNum = 7;
-  leftEye.render();
+  if (g_normal) { 
+    leftEye.textureNum = -3;
+  } else {
+    leftEye.textureNum = 7;
+  }
+  leftEye.renderfast();
 
   var leftPuple = new Cube([0.0,0.0,0.0,1.0]);
   leftPuple.matrix.translate(-0.1,0.11,0.04);
   leftPuple.matrix.scale(0.02,0.02,0.1);
-  leftPuple.textureNum = 7;
-  leftPuple.render();
+  if (g_normal) { 
+    leftPuple.textureNum = -3;
+  } else {
+    leftPuple.textureNum = 7;
+  }
+  leftPuple.renderfast();
 
   var rightEye = new Cube([1.0,1.0,1.0,1.0]);
   rightEye.matrix.translate(0.05,0.07,0.05);
   rightEye.matrix.scale(0.1,0.1,0.1);
-  rightEye.textureNum = 7;
-  rightEye.render();
+  if (g_normal) { 
+    rightEye.textureNum = -3;
+  } else {
+    rightEye.textureNum = 7;
+  }
+  rightEye.renderfast();
 
   var rightPuple = new Cube([0.0,0.0,0.0,1.0]);
   rightPuple.matrix.translate(0.1,0.11,0.04);
   rightPuple.matrix.scale(0.02,0.02,0.1);
-  rightPuple.textureNum = 7;
-  rightPuple.render();
+  if (g_normal) { 
+    rightPuple.textureNum = -3;
+  } else {
+    rightPuple.textureNum = 7;
+  }
+  rightPuple.renderfast();
 
   var mouth = new Cube([0.1,0.1,0.1,1.0]);
   mouth.matrix.translate(-0.05,-0.1,0.10);
   mouth.matrix.scale(0.1*g_msize,0.1*g_msize,0.11);
-  mouth.textureNum = 7;
-  mouth.render();
-
+  if (g_normal) { 
+    mouth.textureNum = -3;
+  } else {
+    mouth.textureNum = 7;
+  }
+  mouth.renderfast();
 
 
   
@@ -1338,9 +1515,13 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
-  base.textureNum = 7;
+  if (g_normal) { 
+    base.textureNum = -3;
+  } else {
+    base.textureNum = 7;
+  }
   base.normalMatrix.setInverseOf(base.matrix).transpose();
-  base.render();
+  base.renderfast();
 
   //draw a left arm
   var longArm = new Cube([0.9,0,0.9,1]);
@@ -1353,9 +1534,13 @@ function renderAllShapes() {
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
   longArm.matrix.translate(-0.5,0,0);
-  longArm.textureNum = 7;
+  if (g_normal) { 
+    longArm.textureNum = -3;
+  } else {
+    longArm.textureNum = 7;
+  }
   longArm.normalMatrix.setInverseOf(longArm.matrix).transpose();
-  longArm.render();
+  longArm.renderfast();
 
   //draw a box
   var short = new Cube([0.8,0,0.8,1]);
@@ -1367,9 +1552,13 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
-  short.textureNum = 7;
+  if (g_normal) { 
+    short.textureNum = -3;
+  } else {
+    short.textureNum = 7;
+  }
   short.normalMatrix.setInverseOf(short.matrix).transpose();
-  short.render();
+  short.renderfast();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
   tip.fixtop = true;
@@ -1381,9 +1570,13 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
-  tip.textureNum = 7;
+  if (g_normal) { 
+    tip.textureNum = -3;
+  } else {
+    tip.textureNum = 7;
+  }
   tip.normalMatrix.setInverseOf(tip.matrix).transpose();
-  tip.render();
+  tip.renderfast();
 
 
   //leg 2
@@ -1395,9 +1588,13 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
-  base.textureNum = 7;
+  if (g_normal) { 
+    base.textureNum = -3;
+  } else {
+    base.textureNum = 7;
+  }
   base.normalMatrix.setInverseOf(base.matrix).transpose();
-  base.render();
+  base.renderfast();
 
   //draw a left arm
   var longArm = new Cube([0.9,0,0.9,1]);
@@ -1410,9 +1607,13 @@ function renderAllShapes() {
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
   longArm.matrix.translate(-0.5,0,0);
-  longArm.textureNum = 7;
+  if (g_normal) { 
+    longArm.textureNum = -3;
+  } else {
+    longArm.textureNum = 7;
+  }
   longArm.normalMatrix.setInverseOf(longArm.matrix).transpose();
-  longArm.render();
+  longArm.renderfast();
 
   //draw a box
   var short = new Cube([0.8,0,0.8,1]);
@@ -1424,9 +1625,13 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
-  short.textureNum = 7;
+  if (g_normal) { 
+    short.textureNum = -3;
+  } else {
+    short.textureNum = 7;
+  }
   short.normalMatrix.setInverseOf(short.matrix).transpose();
-  short.render();
+  short.renderfast();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
   tip.fixtop = true;
@@ -1438,9 +1643,13 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
-  tip.textureNum = 7;
+  if (g_normal) { 
+    tip.textureNum = -3;
+  } else {
+    tip.textureNum = 7;
+  }
   tip.normalMatrix.setInverseOf(tip.matrix).transpose();
-  tip.render();
+  tip.renderfast();
 
   //leg 3
 
@@ -1451,9 +1660,13 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
-  base.textureNum = 7;
+  if (g_normal) { 
+    base.textureNum = -3;
+  } else {
+    base.textureNum = 7;
+  }
   base.normalMatrix.setInverseOf(base.matrix).transpose();
-  base.render();
+  base.renderfast();
 
   //draw a left arm
   var longArm = new Cube([0.9,0,0.9,1]);
@@ -1466,9 +1679,13 @@ function renderAllShapes() {
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
   longArm.matrix.translate(-0.5,0,0);
-  longArm.textureNum = 7;
+  if (g_normal) { 
+    longArm.textureNum = -3;
+  } else {
+    longArm.textureNum = 7;
+  }
   longArm.normalMatrix.setInverseOf(longArm.matrix).transpose();
-  longArm.render();
+  longArm.renderfast();
 
   //draw a box
   var short = new Cube([0.8,0,0.8,1]);
@@ -1480,9 +1697,13 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
-  short.textureNum = 7;
+  if (g_normal) { 
+    short.textureNum = -3;
+  } else {
+    short.textureNum = 7;
+  }
   short.normalMatrix.setInverseOf(short.matrix).transpose();
-  short.render();
+  short.renderfast();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
   tip.fixtop = true;
@@ -1494,9 +1715,13 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
-  tip.textureNum = 7;
+  if (g_normal) { 
+    tip.textureNum = -3;
+  } else {
+    tip.textureNum = 7;
+  }
   tip.normalMatrix.setInverseOf(tip.matrix).transpose();
-  tip.render();
+  tip.renderfast();
 
   //leg 4
 
@@ -1507,9 +1732,13 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
-  base.textureNum = 7;
+  if (g_normal) { 
+    base.textureNum = -3;
+  } else {
+    base.textureNum = 7;
+  }
   base.normalMatrix.setInverseOf(base.matrix).transpose();
-  base.render();
+  base.renderfast();
 
   //draw a left arm
   var longArm = new Cube([0.9,0,0.9,1]);
@@ -1522,9 +1751,13 @@ function renderAllShapes() {
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
   longArm.matrix.translate(-0.5,0,0);
-  longArm.textureNum = 7;
+  if (g_normal) { 
+    longArm.textureNum = -3;
+  } else {
+    longArm.textureNum = 7;
+  }
   longArm.normalMatrix.setInverseOf(longArm.matrix).transpose();
-  longArm.render();
+  longArm.renderfast();
 
   //draw a box
   var short = new Cube([0.8,0,0.8,1]);
@@ -1536,9 +1769,13 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
-  short.textureNum = 7;
+  if (g_normal) { 
+    short.textureNum = -3;
+  } else {
+    short.textureNum = 7;
+  }
   short.normalMatrix.setInverseOf(short.matrix).transpose();
-  short.render();
+  short.renderfast();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
   tip.fixtop = true;
@@ -1550,9 +1787,13 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
-  tip.textureNum = 7;
+  if (g_normal) { 
+    tip.textureNum = -3;
+  } else {
+    tip.textureNum = 7;
+  }
   tip.normalMatrix.setInverseOf(tip.matrix).transpose();
-  tip.render();
+  tip.renderfast();
 
   //leg5
 
@@ -1563,9 +1804,13 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
-  base.textureNum = 7;
+  if (g_normal) { 
+    base.textureNum = -3;
+  } else {
+    base.textureNum = 7;
+  }
   base.normalMatrix.setInverseOf(base.matrix).transpose();
-  base.render();
+  base.renderfast();
 
   //draw a left arm
   var longArm = new Cube([0.9,0,0.9,1]);
@@ -1578,9 +1823,13 @@ function renderAllShapes() {
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
   longArm.matrix.translate(-0.5,0,0);
-  longArm.textureNum = 7;
+  if (g_normal) { 
+    longArm.textureNum = -3;
+  } else {
+    longArm.textureNum = 7;
+  }
   longArm.normalMatrix.setInverseOf(longArm.matrix).transpose();
-  longArm.render();
+  longArm.renderfast();
 
   //draw a box
   var short = new Cube([0.8,0,0.8,1]);
@@ -1592,9 +1841,13 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
-  short.textureNum = 7;
+  if (g_normal) { 
+    short.textureNum = -3;
+  } else {
+    short.textureNum = 7;
+  }
   short.normalMatrix.setInverseOf(short.matrix).transpose();
-  short.render();
+  short.renderfast();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
   tip.fixtop = true;
@@ -1606,9 +1859,13 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
-  tip.textureNum = 7;
+  if (g_normal) { 
+    tip.textureNum = -3;
+  } else {
+    tip.textureNum = 7;
+  }
   tip.normalMatrix.setInverseOf(tip.matrix).transpose();
-  tip.render();
+  tip.renderfast();
 
   //leg6
 
@@ -1619,9 +1876,13 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
-  base.textureNum = 7;
+  if (g_normal) { 
+    base.textureNum = -3;
+  } else {
+    base.textureNum = 7;
+  }
   base.normalMatrix.setInverseOf(base.matrix).transpose();
-  base.render();
+  base.renderfast();
 
   //draw a left arm
   var longArm = new Cube([0.9,0,0.9,1]);
@@ -1634,9 +1895,13 @@ function renderAllShapes() {
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
   longArm.matrix.translate(-0.5,0,0);
-  longArm.textureNum = 7;
+  if (g_normal) { 
+    longArm.textureNum = -3;
+  } else {
+    longArm.textureNum = 7;
+  }
   longArm.normalMatrix.setInverseOf(longArm.matrix).transpose();
-  longArm.render();
+  longArm.renderfast();
 
   //draw a box
   var short = new Cube([0.8,0,0.8,1]);
@@ -1648,9 +1913,13 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
-  short.textureNum = 7;
+  if (g_normal) { 
+    short.textureNum = -3;
+  } else {
+    short.textureNum = 7;
+  }
   short.normalMatrix.setInverseOf(short.matrix).transpose();
-  short.render();
+  short.renderfast();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
   tip.fixtop = true;
@@ -1662,9 +1931,13 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
-  tip.textureNum = 7;
+  if (g_normal) { 
+    tip.textureNum = -3;
+  } else {
+    tip.textureNum = 7;
+  }
   tip.normalMatrix.setInverseOf(tip.matrix).transpose();
-  tip.render();
+  tip.renderfast();
 
   //leg7
 
@@ -1675,9 +1948,13 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
-  base.textureNum = 7;
+  if (g_normal) { 
+    base.textureNum = -3;
+  } else {
+    base.textureNum = 7;
+  }
   base.normalMatrix.setInverseOf(base.matrix).transpose();
-  base.render();
+  base.renderfast();
 
   //draw a left arm
   var longArm = new Cube([0.9,0,0.9,1]);
@@ -1690,9 +1967,13 @@ function renderAllShapes() {
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
   longArm.matrix.translate(-0.5,0,0);
-  longArm.textureNum = 7;
+  if (g_normal) { 
+    longArm.textureNum = -3;
+  } else {
+    longArm.textureNum = 7;
+  }
   longArm.normalMatrix.setInverseOf(longArm.matrix).transpose();
-  longArm.render();
+  longArm.renderfast();
 
   //draw a box
   var short = new Cube([0.8,0,0.8,1]);
@@ -1704,9 +1985,13 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
-  short.textureNum = 7;
+  if (g_normal) { 
+    short.textureNum = -3;
+  } else {
+    short.textureNum = 7;
+  }
   short.normalMatrix.setInverseOf(short.matrix).transpose();
-  short.render();
+  short.renderfast();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
   tip.fixtop = true;
@@ -1718,9 +2003,13 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
-  tip.textureNum = 7;
+  if (g_normal) { 
+    tip.textureNum = -3;
+  } else {
+    tip.textureNum = 7;
+  }
   tip.normalMatrix.setInverseOf(tip.matrix).transpose();
-  tip.render();
+  tip.renderfast();
 
   //leg8
 
@@ -1731,9 +2020,13 @@ function renderAllShapes() {
   var baseCoordingatesMat = new Matrix4(base.matrix);
 
   base.matrix.scale(0.5*xarmscale, 0.3*yarmscale, zarmscale);
-  base.textureNum = 7;
+  if (g_normal) { 
+    base.textureNum = -3;
+  } else {
+    base.textureNum = 7;
+  }
   base.normalMatrix.setInverseOf(base.matrix).transpose();
-  base.render();
+  base.renderfast();
 
   //draw a left arm
   var longArm = new Cube([0.9,0,0.9,1]);
@@ -1746,9 +2039,13 @@ function renderAllShapes() {
   var longCoordinatesMat = new Matrix4(longArm.matrix);
   longArm.matrix.scale(0.25*xarmscale, 0.55*yarmscale, zarmscale*.95);
   longArm.matrix.translate(-0.5,0,0);
-  longArm.textureNum = 7;
+  if (g_normal) { 
+    longArm.textureNum = -3;
+  } else {
+    longArm.textureNum = 7;
+  }
   longArm.normalMatrix.setInverseOf(longArm.matrix).transpose();
-  longArm.render();
+  longArm.renderfast();
 
   //draw a box
   var short = new Cube([0.8,0,0.8,1]);
@@ -1760,9 +2057,13 @@ function renderAllShapes() {
   var shortCoordinatesMat = new Matrix4(short.matrix);
   short.matrix.scale(0.23*xarmscale, 0.4*yarmscale, zarmscale*.90);
   short.matrix.translate(-0.5,0,-0.101);
-  short.textureNum = 7;
+  if (g_normal) { 
+    short.textureNum = -3;
+  } else {
+    short.textureNum = 7;
+  }
   short.normalMatrix.setInverseOf(short.matrix).transpose();
-  short.render();
+  short.renderfast();
 
   var tip = new Cube([0.7,0,0.7,1.0]);
   tip.fixtop = true;
@@ -1774,9 +2075,13 @@ function renderAllShapes() {
   // final.matrix.scale(1, -1,  1);
   tip.matrix.scale(0.2*xarmscale, 0.3*yarmscale, zarmscale*.85);
   tip.matrix.translate(-0.501,-1.5*yarmscale,-0.201);
-  tip.textureNum = 7;
+  if (g_normal) { 
+    tip.textureNum = -3;
+  } else {
+    tip.textureNum = 7;
+  }
   tip.normalMatrix.setInverseOf(tip.matrix).transpose();
-  tip.render();
+  tip.renderfast();
   
 
   

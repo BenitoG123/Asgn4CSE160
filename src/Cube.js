@@ -151,11 +151,14 @@ class Cube{
     renderfast() { //test 1
       var vert = [];
       var uv = [];
+      var normal = [];
       var rgba = this.color;
 
       gl.uniform1i(u_whichTexture, this.textureNum);
   
       gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+
+      gl.uniformMatrix4fv(u_NormalMatrix, false, this.normalMatrix.elements);
   
       //#-----
       // Pass the color of a point to u_FragColor variable
@@ -165,9 +168,11 @@ class Cube{
       //front of cude
       vert = vert.concat([0.0,0.0,0.0, 1.0,1.0,0.0, 1.0,0.0,0.0 ]);
       uv = uv.concat([0,0, 1,1, 1,0]);
+      normal = normal.concat([0,0,-1, 0,0,-1, 0,0,-1]);
       
       vert = vert.concat([0.0,0.0,0.0, 1.0,1.0,0.0, 0.0,1.0,0.0 ]);
       uv = uv.concat([0,0, 1,1, 0,1]);
+      normal = normal.concat([0,0,-1, 0,0,-1, 0,0,-1]);
       
 
       //#-----
@@ -179,10 +184,12 @@ class Cube{
       //left
       vert = vert.concat([0.0,0.0,0.0, 0.0,1.0,-1.0, 0.0,0.0,-1.0 ]);
       uv = uv.concat([0,0, 1,1, 1,0]);
+      normal = normal.concat([-1,0,0, -1,0,0, -1,0,0]);
       //left1.drawTriangle3DUV();
 
       vert = vert.concat([0.0,0.0,0.0, 0.0,1.0,-1.0, 0.0,1.0,0.0 ]);
       uv = uv.concat([0,0, 1,1, 0,1]);
+      normal = normal.concat([-1,0,0, -1,0,0, -1,0,0]);
       //left2.drawTriangle3DUV();
       
       //#-----
@@ -193,9 +200,11 @@ class Cube{
       //right
       vert = vert.concat([1.0,0.0,0.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
       uv = uv.concat([0,0, 1,1, 1,0]);
+      normal = normal.concat([1,0,0, 1,0,0, 1,0,0]);
       //right1.drawTriangle3DUV();
       vert = vert.concat([1.0,0.0,0.0, 1.0,1.0,-1.0, 1.0,1.0,0.0 ]);
       uv = uv.concat([0,0, 1,1, 0,1]);
+      normal = normal.concat([1,0,0, 1,0,0, 1,0,0]);
       //right2.drawTriangle3DUV();
       //drawTriangle3D( [1.0,0.0,0.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
       //drawTriangle3D( [1.0,0.0,0.0, 1.0,1.0,-1.0, 1.0,1.0,0.0 ]);
@@ -208,9 +217,11 @@ class Cube{
       //back
       vert = vert.concat([0.0,0.0,-1.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
       uv = uv.concat([0,0, 1,1, 1,0]);
+      normal = normal.concat([0,0,1, 0,0,1, 0,0,1]);
       //back1.drawTriangle3DUV();
       vert = vert.concat([0.0,0.0,-1.0, 1.0,1.0,-1.0, 0.0,1.0,-1.0 ]);
       uv = uv.concat([0,0, 1,1, 0,1]);
+      normal = normal.concat([0,0,1, 0,0,1, 0,0,1]);
       //back2.drawTriangle3DUV();
       //drawTriangle3D( [0.0,0.0,-1.0, 1.0,1.0,-1.0, 1.0,0.0,-1.0 ]);
       //drawTriangle3D( [0.0,0.0,-1.0, 1.0,1.0,-1.0, 0.0,1.0,-1.0 ]);
@@ -224,9 +235,11 @@ class Cube{
       //top
       vert = vert.concat([0.0,1.0,0.0, 1.0,1.0,-1.0, 0.0,1.0,-1.0 ]);
       uv = uv.concat([0,0, 1,1, 1,0]);
+      normal = normal.concat([0,1,0, 0,1,0, 0,1,0]);
       //top1.drawTriangle3DUV();
       vert = vert.concat([0.0,1.0,0.0, 1.0,1.0,-1.0, 1.0,1.0,0.0 ]);
       uv = uv.concat([0,0, 1,1, 0,1]);
+      normal = normal.concat([0,1,0, 0,1,0, 0,1,0]);
       //top2.drawTriangle3DUV();
       //drawTriangle3D( [0.0,1.0,0.0, 1.0,1.0,-1.0, 0.0,1.0,-1.0 ]);
       //drawTriangle3D( [0.0,1.0,0.0, 1.0,1.0,-1.0, 1.0,1.0,0.0 ]);
@@ -239,16 +252,19 @@ class Cube{
       //bottom
       vert = vert.concat([0.0,0.0,0.0, 1.0,0.0,-1.0, 1.0,0.0,0.0 ]);
       uv = uv.concat([0,0, 1,1, 1,0]);
+      normal = normal.concat([0,-1,0, 0,-1,0, 0,-1,0]);
       //bottom1.drawTriangle3DUV();
       vert = vert.concat([0.0,0.0,0.0, 1.0,0.0,-1.0, 0.0,0.0,-1.0 ]);
       uv = uv.concat([0,0, 1,1, 0,1]);
+      normal = normal.concat([0,-1,0, 0,-1,0, 0,-1,0]);
       //bottom2.drawTriangle3DUV();
       //drawTriangle3D( [0.0,0.0,0.0, 1.0,0.0,-1.0, 1.0,0.0,0.0 ]);
       //drawTriangle3D( [0.0,0.0,0.0, 1.0,0.0,-1.0, 0.0,0.0,-1.0 ]);
 
       var alltri = new Triangle(vert);
       alltri.uv = uv;
-      alltri.drawTriangle3DUV();
+      alltri.normal = normal;
+      alltri.drawTriangle3DUVNormal();
 
     }
 }

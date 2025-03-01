@@ -40,7 +40,7 @@ class Camera {
         //debugger;
 
         //console.log("initial eye", this.eye);
-        console.log(this.at);
+        //console.log(this.at);
         var at_copy = new Vector3(this.at.elements);
         //at_copy = this.at.sub(this.eye);
         //at_copy = this.at;
@@ -53,7 +53,7 @@ class Camera {
         //console.log("at_copy after normal", at_copy);
         this.eye.add(at_copy);
         this.at.add(at_copy);
-        console.log("final eye", this.eye);
+        //console.log("final eye", this.eye);
     }
 
     back() {
